@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misi BARARA - Pengembaraan Belajar Kanak-Kanak</title>
+    
+    <!-- Tailwind CSS & Google Fonts -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome untuk Ikon Kebanggaan Kanak-kanak -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Canvas Confetti untuk Animasi Kemenangan -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Firebase App & Services SDK v9 (Compat version untuk kemudahan embed 1 fail) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .bouncy {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+        }
+        .pulse-slow {
+            animation: pulse 3s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(0.98); }
+        }
+        /* Style untuk lukisan tracing */
+        #tracingCanvas {
+            touch-action: none;
+        }
+        /* Custom scrollbar comel */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ffb703;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 antialiased overflow-x-hidden">
+
+    <!-- AUDIO ELEMENTS -->
+    <audio id="sndClick" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
+    <audio id="sndCorrect" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav" preload="auto"></audio>
+    <audio id="sndWrong" src="https://assets.mixkit.co/active_storage/sfx/951/951-84.wav" preload="auto"></audio>
+    <audio id="sndWin" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav" preload="auto"></audio>
+    <audio id="sndBgm" src="https://assets.mixkit.co/active_storage/sfx/123/123-84.wav" loop preload="auto"></audio>
+
+    <!-- HEADER UTAMA (Sentiasa Ada Kecuali di Skrin Game) -->
+    <header id="mainHeader" class="hidden bg-white/80 backdrop-blur-md shadow-md sticky top-0 z-40 px-4 py-2 flex justify-between items-center border-b-4 border-amber-400">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="tukarSkrin('skrinMenu')">
+            <div class="w-10 h-10 bg-amber-400 rounded-full flex items-center justify-center font-bold text-white text-xl border-2 border-white shadow">🍊</div>
+            <span class="text-xl font-black text-amber-500 tracking-wider">Misi BARARA</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <!-- Stats Ringkas -->
+            <div class="flex items-center gap-3 bg-slate-100 rounded-full px-3 py-1 text-sm font-bold shadow-inner">
+                <span class="text-yellow-500">⭐ <span id="lblHeaderBintang">0</span></span>
+                <span class="text-amber-600">🪙 <span id="lblHeaderSyiling">0</span></span>
+            </div>
+            <!-- Butang Tukar Baju / Avatar -->
+            <button onclick="bukaAlmari()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold px-3 py-1.5 rounded-full text-sm shadow transition border-b-4 border-purple-700 active:translate-y-1">
+                👕 Almari
+            </button>
+            <!-- Butang Penjaga / Ibu bapa -->
+            <button onclick="tukarSkrin('skrinIbubapa')" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-3 py-1.5 rounded-full text-sm shadow transition border-b-4 border-rose-700 active:translate-y-1">
+                🔑 Ibu Bapa
+            </button>
+            <button onclick="logKeluar()" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-sign-out-alt text-lg"></i></button>
+        </div>
+    </header>
+
+    <!-- KANDUNGAN SKRIN-SKRIN -->
+    <main class="max-w-4xl mx-auto px-4 py-6">
+
+        <!-- 1. SKRIN LOGIN -->
+        <section id="skrinLogin" class="block bg-white rounded-3xl p-8 shadow-2xl max-w-md mx-auto mt-10 text-center border-t-8 border-cyan-400">
+            <div class="w-32 h-32 bg-amber-200 rounded-full mx-auto flex items-center justify-center text-6xl bouncy shadow-inner relative">
+                🦫
+                <div class="absolute -bottom-1 -right-1 bg-cyan-400 text-white text-xs font-bold px-2 py-0.5 rounded-full">BARARA</div>
+            </div>
+            <h1 class="text-3xl font-black text-slate-800 mt-4 tracking-tight">Misi BARARA</h1>
+            <p class="text-slate-500 text-sm mt-1">Jom mengembara bersama BARARA sambil belajar membaca & mengira!</p>
+
+            <div class="mt-6 space-y-3">
+                <input type="email" id="txtEmail" placeholder="Emel Ibu bapa / Penjaga" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-cyan-400 focus:outline-none text-center font-medium">
+                <input type="password" id="txtPassword" placeholder="Kata Laluan" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-cyan-400 focus:outline-none text-center font-medium">
+                
+                <button onclick="logMasukEmel()" class="w-full bg-cyan-400 hover:bg-cyan-500 text-white text-lg font-bold py-3 rounded-2xl shadow-lg border-b-4 border-cyan-600 transition active:translate-y-1">
+                    🚀 Jom Mula Pengembaraan!
+                </button>
+                <button onclick="daftarEmel()" class="w-full text-xs text-cyan-600 hover:underline">Belum ada akaun? Daftar Emel Baharu</button>
+            </div>
+
+            <div class="relative my-6">
+                <hr class="border-slate-200">
+                <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-xs text-slate-400 font-bold uppercase tracking-wider">Atau</span>
+            </div>
+
+            <button onclick="logMasukDemo()" class="w-full bg-amber-400 hover:bg-amber-500 text-white text-base font-bold py-3 rounded-2xl shadow border-b-4 border-amber-600 transition active:translate-y-1 flex items-center justify-center gap-2">
+                🎮 Cuba Mod Demo Tanpa Akaun
+            </button>
+        </section>
+
+        <!-- 2. SKRIN PENDAFTARAN PROFIL ANAK (SETUP PERTAMA) -->
+        <section id="skrinSetupProfil" class="hidden bg-white rounded-3xl p-8 shadow-2xl max-w-md mx-auto mt-10 border-t-8 border-emerald-400">
+            <h2 class="text-2xl font-black text-center text-slate-800">Kenali Pengembara Cilik!</h2>
+            <p class="text-center text-slate-500 text-sm mb-6">BARARA tak sabar nak tahu nama kawan baharu!</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-slate-600 mb-1">Nama Manja Anak:</label>
+                    <input type="text" id="txtNamaAnak" placeholder="Contoh: Adam, Iris" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-emerald-400 focus:outline-none font-medium">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-600 mb-1">Umur Anak:</label>
+                    <select id="selUmurAnak" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-emerald-400 focus:outline-none font-medium">
+                        <option value="4">4 Tahun (Tadika)</option>
+                        <option value="5">5 Tahun (Tadika)</option>
+                        <option value="6">6 Tahun (Prasekolah)</option>
+                        <option value="7">7 Tahun (Sekolah Rendah)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-600 mb-1">Had Masa Bermain Sehari:</label>
+                    <select id="selHadMasa" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-emerald-400 focus:outline-none font-medium">
+                        <option value="5">5 Minit</option>
+                        <option value="10">10 Minit</option>
+                        <option value="15" selected>15 Minit</option>
+                        <option value="20">20 Minit</option>
+                        <option value="30">30 Minit</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-600 mb-1">Tahap Kesukaran Asas:</label>
+                    <select id="selTahap" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-emerald-400 focus:outline-none font-medium">
+                        <option value="Mudah">Mudah (Bimbingan Penuh)</option>
+                        <option value="Sederhana" selected>Sederhana</option>
+                        <option value="Sukar">Sukar (Masa Lebih Cepat)</option>
+                    </select>
+                </div>
+                <button onclick="simpanProfilAnak()" class="w-full bg-emerald-400 hover:bg-emerald-500 text-white text-lg font-bold py-3 rounded-xl shadow-lg border-b-4 border-emerald-600 transition active:translate-y-1 mt-2">
+                    Siap! Jom Masuk Dunia BARARA ✨
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. SKRIN UTAMA (MENU DUNIA) -->
+        <section id="skrinMenu" class="hidden space-y-6">
+            <!-- Bubble Dialog BARARA -->
+            <div class="bg-white rounded-3xl p-4 shadow-md flex items-center gap-4 border-l-8 border-amber-400 relative">
+                <div class="text-4xl bg-amber-100 p-2 rounded-2xl shadow-inner relative">
+                    🦫
+                    <div id="avatarAksesoriMini" class="absolute top-0 left-0 w-full h-full pointer-events-none flex items-center justify-center text-xs"></div>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-amber-500 tracking-wider uppercase">BARARA Kata:</p>
+                    <p id="lblDialogBarara" class="text-base font-bold text-slate-700">"Jom kita mula misi hari ini! Pilih dunia pembelajaran kegemaran awak!"</p>
+                </div>
+            </div>
+
+            <!-- Grid Pilihan Dunia / Subjek -->
+            <h2 class="text-2xl font-black text-slate-800 tracking-wide mt-4">Pilih Dunia Pembelajaran 🗺️</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Bahasa Melayu -->
+                <div onclick="pilihDunia('Bahasa Melayu')" class="cursor-pointer bg-gradient-to-br from-red-400 to-rose-500 p-6 rounded-3xl shadow-xl text-white transform hover:scale-105 transition border-b-8 border-rose-700 relative overflow-hidden group">
+                    <div class="absolute right-[-10px] bottom-[-10px] text-8xl opacity-20 group-hover:scale-110 transition duration-300">📚</div>
+                    <span class="bg-white/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">Dunia 1</span>
+                    <h3 class="text-3xl font-black mt-2">Bahasa Melayu</h3>
+                    <p class="text-sm text-rose-100 font-medium mt-1">Kuasai huruf, suku kata, perkataan & ayat mudah.</p>
+                    <div class="mt-4 bg-black/10 rounded-xl p-2 text-xs font-bold flex justify-between">
+                        <span>Selesai: <span id="progressBM">0%</span></span>
+                        <span>⭐ <span id="bintangBM">0</span></span>
+                    </div>
+                </div>
+
+                <!-- English -->
+                <div onclick="pilihDunia('English')" class="cursor-pointer bg-gradient-to-br from-cyan-400 to-blue-500 p-6 rounded-3xl shadow-xl text-white transform hover:scale-105 transition border-b-8 border-blue-700 relative overflow-hidden group">
+                    <div class="absolute right-[-10px] bottom-[-10px] text-8xl opacity-20 group-hover:scale-110 transition duration-300">🔤</div>
+                    <span class="bg-white/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">Dunia 2</span>
+                    <h3 class="text-3xl font-black mt-2">English</h3>
+                    <p class="text-sm text-cyan-100 font-medium mt-1">Phonics, sight words, spelling & fun adventures.</p>
+                    <div class="mt-4 bg-black/10 rounded-xl p-2 text-xs font-bold flex justify-between">
+                        <span>Progress: <span id="progressEN">0%</span></span>
+                        <span>⭐ <span id="bintangEN">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Matematik -->
+                <div onclick="pilihDunia('Matematik')" class="cursor-pointer bg-gradient-to-br from-amber-400 to-orange-500 p-6 rounded-3xl shadow-xl text-white transform hover:scale-105 transition border-b-8 border-orange-700 relative overflow-hidden group">
+                    <div class="absolute right-[-10px] bottom-[-10px] text-8xl opacity-20 group-hover:scale-110 transition duration-300">🧮</div>
+                    <span class="bg-white/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">Dunia 3</span>
+                    <h3 class="text-3xl font-black mt-2">Matematik</h3>
+                    <p class="text-sm text-amber-100 font-medium mt-1">Mengira nombor, tambah, tolak & bentuk asas.</p>
+                    <div class="mt-4 bg-black/10 rounded-xl p-2 text-xs font-bold flex justify-between">
+                        <span>Selesai: <span id="progressMT">0%</span></span>
+                        <span>⭐ <span id="bintangMT">0</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. SKRIN PILIHAN TOPIK & MISI -->
+        <section id="skrinTopik" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="tukarSkrin('skrinMenu')" class="bg-slate-500 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl text-sm shadow transition"><i class="fas fa-arrow-left mr-2"></i> Kembali ke Dunia</button>
+                <h2 id="lblNamaDuniaSemasa" class="text-2xl font-black text-slate-800">Nama Dunia</h2>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Pilih Topik:</label>
+                <select id="selTopikSemasa" onchange="kemaskiniSenaraiMisi()" class="w-full p-2 rounded-xl border border-slate-200 text-lg font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400"></select>
+            </div>
+
+            <h3 class="text-lg font-black text-slate-700 tracking-wide mt-4">Peta Misi Pengembaraan 🗺️</h3>
+            <div id="gridMisi" class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+                <!-- Diisi dinamik oleh JS (10 Misi) -->
+            </div>
+        </section>
+
+        <!-- 5. SKRIN GAME (TEMPAT JAWAB SOALAN) -->
+        <section id="skrinGame" class="hidden">
+            <!-- Header Game Kecil -->
+            <div class="flex justify-between items-center bg-white/90 p-3 rounded-2xl shadow mb-4">
+                <button onclick="keluarGame()" class="text-xs font-bold text-slate-400 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl transition">🚪 Keluar Misi</button>
+                <div class="text-center">
+                    <span id="lblMisiTajuk" class="block text-xs font-bold text-slate-400 uppercase">Misi 1</span>
+                    <span id="lblTopkTajuk" class="block text-sm font-black text-slate-700">Topik</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-1 rounded-lg">Soalan: <span id="lblIndexSoalan">1</span>/<span id="lblTotalSoalan">15</span></span>
+                </div>
+            </div>
+
+            <!-- Progress Bar Soalan -->
+            <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden mb-6 shadow-inner">
+                <div id="barProgressGame" class="bg-gradient-to-r from-emerald-400 to-teal-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+
+            <!-- Main Panel Soalan -->
+            <div class="bg-white rounded-3xl p-6 shadow-xl border-b-8 border-slate-200 text-center space-y-6">
+                <!-- Arahan Soalan -->
+                <h3 id="lblArahanSoalan" class="text-2xl font-black text-slate-800 tracking-wide">Arahan Soalan di Sini?</h3>
+
+                <!-- Paparan Visual (Jika Perlu) -->
+                <div id="boxVisualGame" class="w-full min-h-[140px] flex items-center justify-center text-6xl p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 relative">
+                    <!-- Boleh mengandungi emoji besar, teks perkataan, atau kanvas tracing -->
+                    <span id="txtVisualEmoji">🎈</span>
+                    
+                    <!-- Kanvas Khas untuk Tracing -->
+                    <canvas id="tracingCanvas" width="300" height="200" class="hidden absolute top-0 left-0 right-0 bottom-0 m-auto bg-white border border-slate-300 rounded-xl shadow-inner"></canvas>
+                </div>
+
+                <!-- ZON INTERAKSI JAWAPAN -->
+                <div id="zonJawapan" class="w-full pt-4">
+                    <!-- Jenis Objektif / Pilihan Gambar akan di-render di sini secara dinamik -->
+                </div>
+            </div>
+
+            <!-- Bubble Dialog Maklumbalas BARARA Semasa Game -->
+            <div id="feedbackBarara" class="mt-4 bg-amber-50 rounded-2xl p-3 border-2 border-amber-200 flex items-center gap-3 transform scale-95 opacity-0 transition duration-300">
+                <div class="text-3xl">🦫</div>
+                <p id="lblFeedbackTeks" class="font-bold text-amber-800 text-sm">"Hebat! Jom teruskan lagi!"</p>
+            </div>
+        </section>
+
+        <!-- 6. ALMARI BANYAK GANJARAN (CUSTOM AVATAR) -->
+        <section id="skrinAlmari" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <button onclick="tukarSkrin('skrinMenu')" class="bg-slate-500 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl text-sm shadow transition"><i class="fas fa-arrow-left mr-2"></i> Kembali</button>
+                <h2 class="text-2xl font-black text-slate-800">Almari Pakaian BARARA 👕</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Preview Avatar Terkini -->
+                <div class="bg-white p-6 rounded-3xl shadow-xl border-t-8 border-purple-500 text-center flex flex-col justify-between items-center min-h-[300px]">
+                    <h3 class="font-black text-slate-600 text-sm uppercase">Penampilan Semasa</h3>
+                    
+                    <!-- Patung BARARA Besar beserta Lapisan Pakaian -->
+                    <div class="w-40 h-40 bg-gradient-to-tr from-amber-100 to-yellow-200 rounded-full flex items-center justify-center text-7xl relative shadow-inner my-4 bouncy">
+                        🦫
+                        <!-- Lapisan Aksesori Di Sini -->
+                        <div id="layerTopi" class="absolute top-2 text-3xl"></div>
+                        <div id="layerBaju" class="absolute bottom-4 text-4xl"></div>
+                        <div id="layerAksesori" class="absolute right-4 bottom-8 text-2xl"></div>
+                    </div>
+
+                    <button onclick="kosongkanPakaian()" class="text-xs bg-slate-100 text-slate-500 hover:bg-red-50 font-bold px-3 py-1.5 rounded-xl transition">Tanggalkan Semua Baju</button>
+                </div>
+
+                <!-- Pilihan Aksesori yang Telah Dibuka -->
+                <div class="bg-white p-6 rounded-3xl shadow-xl md:col-span-2 space-y-4">
+                    <!-- Tab Kategori -->
+                    <div class="flex gap-2 border-b border-slate-200 pb-2">
+                        <button onclick="tukarTabAlmari('topi')" id="btnTab-topi" class="font-bold text-sm px-4 py-1 rounded-full bg-purple-500 text-white">🧢 Topi</button>
+                        <button onclick="tukarTabAlmari('baju')" id="btnTab-baju" class="font-bold text-sm px-4 py-1 rounded-full bg-slate-100 text-slate-600">👕 Baju</button>
+                        <button onclick="tukarTabAlmari('aksesori')" id="btnTab-aksesori" class="font-bold text-sm px-4 py-1 rounded-full bg-slate-100 text-slate-600">🕶️ Aksesori</button>
+                    </div>
+
+                    <!-- Grid Item Pakaian -->
+                    <div id="gridItemAlmari" class="grid grid-cols-3 gap-3 max-h-[220px] overflow-y-auto p-1">
+                        <!-- Diisi secara dinamik -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. DASHBOARD IBU BAPA & PENJAGA -->
+        <section id="skrinIbubapa" class="hidden space-y-6 bg-white p-6 rounded-3xl shadow-xl border-t-8 border-rose-500">
+            <div class="flex justify-between items-center">
+                <button onclick="tukarSkrin('skrinMenu')" class="bg-slate-500 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl text-sm shadow transition"><i class="fas fa-arrow-left mr-2"></i> Kembali ke Game</button>
+                <h2 class="text-2xl font-black text-rose-600">Dashboard Penjaga & Laporan 📊</h2>
+            </div>
+
+            <!-- Maklumat Ringkas Profil & Kawalan Had Masa -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-rose-50 p-4 rounded-2xl border border-rose-100">
+                <div>
+                    <h3 class="font-bold text-slate-700 text-sm uppercase">Profil Pengembara Cilik</h3>
+                    <p class="text-xl font-black text-slate-800 mt-1"><span id="lblDashNama">Nama</span> (<span id="lblDashUmur">4</span> Tahun)</p>
+                    <p class="text-xs text-slate-500">Tahap Laluan Asas: <span id="lblDashTahap" class="font-bold text-slate-700">Sederhana</span></p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-700 text-sm uppercase">Tetapan Had Masa Misi Semasa</h3>
+                    <div class="flex gap-2 mt-1">
+                        <select id="selDashHadMasa" onchange="kemaskiniTetapanDash()" class="p-1.5 rounded-xl border border-slate-300 font-bold text-sm bg-white text-slate-700">
+                            <option value="5">5 Minit</option>
+                            <option value="10">10 Minit</option>
+                            <option value="15">15 Minit</option>
+                            <option value="20">20 Minit</option>
+                            <option value="30">30 Minit</option>
+                        </select>
+                        <select id="selDashTahap" onchange="kemaskiniTetapanDash()" class="p-1.5 rounded-xl border border-slate-300 font-bold text-sm bg-white text-slate-700">
+                            <option value="Mudah">Mudah</option>
+                            <option value="Sederhana">Sederhana</option>
+                            <option value="Sukar">Sukar</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kad Statistik Penguasaan Semasa -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 bg-slate-50 rounded-2xl text-center border border-slate-200">
+                    <span class="text-2xl">📚</span>
+                    <h4 class="font-bold text-slate-700 text-sm mt-1">Bahasa Melayu</h4>
+                    <p class="text-3xl font-black text-slate-800 mt-2" id="lblDashBM">0%</p>
+                    <span class="text-xs text-slate-400 font-medium">Penguasaan Topik</span>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-2xl text-center border border-slate-200">
+                    <span class="text-2xl">🔤</span>
+                    <h4 class="font-bold text-slate-700 text-sm mt-1">English Language</h4>
+                    <p class="text-3xl font-black text-slate-800 mt-2" id="lblDashEN">0%</p>
+                    <span class="text-xs text-slate-400 font-medium">Mastery Level</span>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-2xl text-center border border-slate-200">
+                    <span class="text-2xl">🧮</span>
+                    <h4 class="font-bold text-slate-700 text-sm mt-1">Matematik</h4>
+                    <p class="text-3xl font-black text-slate-800 mt-2" id="lblDashMT">0%</p>
+                    <span class="text-xs text-slate-400 font-medium">Penguasaan Mengira</span>
+                </div>
+            </div>
+
+            <!-- Cadangan Tindakan Seterusnya -->
+            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200">
+                <h4 class="font-black text-amber-800 text-sm uppercase flex items-center gap-2">💡 Cadangan Aktiviti BARARA</h4>
+                <p id="lblDashCadangan" class="text-sm text-slate-700 font-medium mt-1">Sila lengkapkan sekurang-kurangnya satu misi untuk membolehkan sistem menganalisis kekuatan pembelajaran anak anda.</p>
+            </div>
+        </section>
+
+        <!-- 8. MODAL KOTAK HADIAH / REWARD (ANIMASI MENANG) -->
+        <div id="modalReward" class="hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full text-center border-t-8 border-yellow-400 transform scale-95 transition-all duration-300">
+                <h2 class="text-3xl font-black text-amber-500">MISI SELESAI! 🎉</h2>
+                <p id="lblDialogMenang" class="text-sm font-bold text-slate-500 mt-1">"BARARA bangga dengan awak!"</p>
+
+                <!-- Animasi Hadiah Terbuka -->
+                <div class="my-6 text-6xl bouncy select-none cursor-pointer" onclick="bukaHadiahAnimasi()">
+                    <div id="boxHadiahIcon">🎁</div>
+                </div>
+
+                <div id="infoGanjaranDapat" class="hidden space-y-2 bg-slate-50 p-3 rounded-2xl border border-slate-200 text-center">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ganjaran Terbuka! 🔓</p>
+                    <p id="lblNamaItemDapat" class="text-xl font-black text-purple-600">Topi Polis 🎉</p>
+                    <p class="text-xs text-slate-500 font-medium">Buka menu Almari untuk memakainya pada BARARA.</p>
+                </div>
+
+                <div class="mt-4 flex gap-2 justify-center">
+                    <div class="bg-yellow-100 text-yellow-700 font-black px-3 py-1 rounded-full text-sm">⭐ +<span id="lblRewardBintang">3</span></div>
+                    <div class="bg-amber-100 text-amber-700 font-black px-3 py-1 rounded-full text-sm">🪙 +<span id="lblRewardSyiling">15</span></div>
+                </div>
+
+                <button onclick="tutupModalReward()" class="mt-6 w-full bg-emerald-400 hover:bg-emerald-500 text-white font-bold py-3 rounded-2xl shadow-md border-b-4 border-emerald-600 transition active:translate-y-1">
+                    Teruskan Pengembaraan 🚀
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER BIJAK -->
+    <footer class="text-center text-xs text-slate-400 font-medium py-10">
+        &copy; 2026 Misi BARARA. Pengalaman Pendidikan Premium Luar Biasa.
+    </footer>
+
+    <!-- CODE LOGIC & ENGINE APLIKASI -->
+    <script>
+        // --------------------------------------------------
+        // FIREBASE INITIALIZATION & CONFIG
+        // --------------------------------------------------
+        const firebaseConfig = {
+            apiKey: "AIzaSyATCfH4VFr10dIjiWBE4PY3k6O0j1f7HQI",
+            authDomain: "barara-6b66b.firebaseapp.com",
+            databaseURL: "https://barara-6b66b-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "barara-6b66b",
+            storageBucket: "barara-6b66b.firebasestorage.app",
+            messagingSenderId: "20713876789",
+            appId: "1:20713876789:web:7b265baf1ba7f5cb8b307c"
+        };
+        
+        // Mulakan Firebase secara selamat
+        let database = null;
+        let currentUser = null;
+        let isDemoMode = false;
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+        } catch (e) {
+            console.warn("Firebase tidak dapat dimulakan. Mod offline/demo diaktifkan secara automatik.");
+        }
+
+        // Data Struktur Pilihan Pakaian / Aksesori BARARA
+        const senaraiPakaianPenuh = {
+            topi: [
+                { id: 't_cap', nama: 'Cap Ceria', emoji: '🧢' },
+                { id: 't_polis', nama: 'Topi Polis', emoji: '👮' },
+                { id: 't_chef', nama: 'Topi Chef', emoji: '👨‍🍳' },
+                { id: 't_angkasa', nama: 'Topi Angkasa', emoji: '👨‍🚀' },
+                { id: 't_lanun', nama: 'Topi Lanun', emoji: '🏴‍☠️' }
+            ],
+            baju: [
+                { id: 'b_hoodie', nama: 'Hoodie Ungu', emoji: '🧥' },
+                { id: 'b_jaket', nama: 'Jaket Kembara', emoji: '🦺' },
+                { id: 'b_tshirt', nama: 'T-Shirt Santai', emoji: '👕' },
+                { id: 'b_bomba', nama: 'Uniform Bomba', emoji: '🧑‍🚒' },
+                { id: 'b_doktor', nama: 'Uniform Doktor', emoji: '🥼' },
+                { id: 'b_super', nama: 'Baju Superhero', emoji: '🦸' }
+            ],
+            aksesori: [
+                { id: 'a_cermin', nama: 'Cermin Mata Cool', emoji: '🕶️' },
+                { id: 'a_beg', nama: 'Backpack Merah', emoji: '🎒' },
+                { id: 'a_skaf', nama: 'Skaf Hangat', emoji: '🧣' },
+                { id: 'a_kasut', nama: 'Kasut Sukan', emoji: '👟' },
+                { id: 'a_jam', nama: 'Jam Tangan Pintar', emoji: '⌚' }
+            ]
+        };
+
+        // Bank Data Bank Topik Misi
+        const dataDuniaPenuh = {
+            "Bahasa Melayu": [
+                { nama: "Huruf & Abjad", emoji: "🔤", soalan: [
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'A'", pilihan: ["a", "b", "c", "d"], jawapan: "a" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'm'", pilihan: ["M", "N", "W", "V"], jawapan: "M" },
+                    { jenis: "pilih_gambar", soalan: "Manakah huruf 'b'?", pilihan: ["🅰️", "🅱️", "🆃", "🆂"], jawapan: "🅱️" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'A'", target: "A" }
+                ]},
+                { nama: "Suku Kata KV (KVKV)", emoji: "🗣️", soalan: [
+                    { jenis: "objektif", soalan: "Lengkapkan perkataan: BA + ___ = Baju", pilihan: ["ju", "ru", "tu", "ku"], jawapan: "ju" },
+                    { jenis: "objektif", soalan: "Bunyi bagi gambar 🏠 adalah...", pilihan: ["ru-mah", "bu-ku", "bo-la", "ci-li"], jawapan: "ru-mah" },
+                    { jenis: "isi_tempat_kosong", soalan: "___ + LI = CILI", pilihan: ["CI", "BI", "DI", "MI"], jawapan: "CI" }
+                ]},
+                { nama: "Membaca Perkataan & Ayat", emoji: "📖", soalan: [
+                    { jenis: "objektif", soalan: "Susun perkataan ini supaya betul: 'suka / saya / buku'", pilihan: ["saya suka buku", "buku saya suka", "suka saya buku"], jawapan: "saya suka buku" }
+                ]}
+            ],
+            "English": [
+                { nama: "Alphabet & Phonics", emoji: "🔤", soalan: [
+                    { jenis: "objektif", soalan: "What is the beginning sound of '🍎 Apple'?", pilihan: ["A", "B", "C", "D"], jawapan: "A" },
+                    { jenis: "objektif", soalan: "Which animal starts with the letter 'D'?", pilihan: ["🐈 Cat", "🐕 Dog", "🦁 Lion", "🐮 Cow"], jawapan: "🐕 Dog" }
+                ]},
+                { nama: "Vocabulary & Animals", emoji: "🦁", soalan: [
+                    { jenis: "objektif", soalan: "Identify this fruit: 🍌", pilihan: ["Banana", "Apple", "Orange", "Grape"], jawapan: "Banana" }
+                ]}
+            ],
+            "Matematik": [
+                { nama: "Membilang Nombor (Counting)", emoji: "🧮", soalan: [
+                    { jenis: "objektif", soalan: "Kira jumlah buah epal ini: 🍎 🍎 🍎", pilihan: ["2", "3", "4", "5"], jawapan: "3" },
+                    { jenis: "pilih_gambar", soalan: "Kumpulan mana yang mempunyai LEBIH BANYAK?", pilihan: ["🍎 🍎", "🍎 🍎 🍎 🍎"], jawapan: "🍎 🍎 🍎 🍎" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk melukis angka '3'", target: "3" }
+                ]},
+                { nama: "Operasi Tambah & Tolak", emoji: "➕", soalan: [
+                    { jenis: "objektif", soalan: "Berapakah 2 + 3?", pilihan: ["4", "5", "6", "7"], jawapan: "5" },
+                    { jenis: "objektif", soalan: "Berapakah 5 - 2?", pilihan: ["2", "3", "4", "1"], jawapan: "3" }
+                ]}
+            ]
+        };
+
+        // State Profil Tempatan Lalai
+        let profilKini = {
+            namaAnak: "Pengembara Cilik",
+            umur: 5,
+            hadMasa: 15,
+            tahap: "Sederhana",
+            bintang: 0,
+            syiling: 0,
+            aksesoriDibuka: ['t_cap', 'b_tshirt'], 
+            pakaianSemasa: { topi: 't_cap', baju: 'b_tshirt', aksesori: '' },
+            misiSelesai: {} // Format: {"Dunia_Topik_Misi": true}
+        };
+
+        // State Enjin Game Semasa Berjalan
+        let tabAlmariSemasa = 'topi';
+        let duniaSemasa = "";
+        let topikIndexSemasa = 0;
+        let misiSemasa = 1;
+        let soalanMisiKini = [];
+        let indexSoalanKini = 0;
+        let soalanSelesaiCount = 0;
+
+        // Tracing State Variables
+        let isDrawing = false;
+        let canvas, ctx;
+
+        // Dialog Rawak Pemberi Semangat BARARA
+        const dialogSemangat = [
+            "Jom kita mula misi!",
+            "Wah hebatnya awak!",
+            "Kita cuba lagi, jangan putus asa ya!",
+            "BARARA bangga dengan awak!",
+            "Luar biasa bijak kawan BARARA ni!"
+        ];
+
+        // --------------------------------------------------
+        // LOGIK UTAMA SISTEM ALIRAN (SCREEN ROUTING)
+        // --------------------------------------------------
+        function tukarSkrin(idSkrin) {
+            mainkanBunyi('sndClick');
+            document.getElementById('skrinLogin').classList.add('hidden');
+            document.getElementById('skrinSetupProfil').classList.add('hidden');
+            document.getElementById('skrinMenu').classList.add('hidden');
+            document.getElementById('skrinTopik').classList.add('hidden');
+            document.getElementById('skrinGame').classList.add('hidden');
+            document.getElementById('skrinAlmari').classList.add('hidden');
+            document.getElementById('skrinIbubapa').classList.add('hidden');
+
+            document.getElementById(idSkrin).classList.remove('hidden');
+
+            if (idSkrin === 'skrinLogin') {
+                document.getElementById('mainHeader').classList.add('hidden');
+            } else {
+                document.getElementById('mainHeader').classList.remove('hidden');
+                kemaskiniPaparanHeader();
+            }
+
+            // Kemaskini data dashboard sekiranya masuk ke skrin ibubapa
+            if (idSkrin === 'skrinIbubapa') {
+                binaDashboardIbubapa();
+            }
+            
+            // Trigger rawak ucapan BARARA di menu utama
+            if (idSkrin === 'skrinMenu') {
+                tukarDialogBarara();
+            }
+        }
+
+        function mainkanBunyi(idAudio) {
+            try {
+                const aud = document.getElementById(idAudio);
+                if(aud) {
+                    aud.currentTime = 0;
+                    aud.play().catch(e => {});
+                }
+            } catch(e){}
+        }
+
+        function tukarDialogBarara() {
+            const rand = dialogSemangat[Math.floor(Math.random() * dialogSemangat.length)];
+            document.getElementById('lblDialogBarara').innerText = `"${rand}"`;
+        }
+
+        function kemaskiniPaparanHeader() {
+            document.getElementById('lblHeaderBintang').innerText = profilKini.bintang || 0;
+            document.getElementById('lblHeaderSyiling').innerText = profilKini.syiling || 0;
+            
+            // Render mini avatar baju
+            const t = senaraiPakaianPenuh.topi.find(x => x.id === profilKini.pakaianSemasa.topi);
+            const b = senaraiPakaianPenuh.baju.find(x => x.id === profilKini.pakaianSemasa.baju);
+            const a = senaraiPakaianPenuh.aksesori.find(x => x.id === profilKini.pakaianSemasa.aksesori);
+            
+            document.getElementById('avatarAksesoriMini').innerHTML = `
+                <span class="absolute top-0 text-xs">${t ? t.emoji : ''}</span>
+                <span class="absolute bottom-1 text-xs">${b ? b.emoji : ''}</span>
+                <span class="absolute right-0 text-[10px]">${a ? a.emoji : ''}</span>
+            `;
+        }
+
+        // --------------------------------------------------
+        // AUTHENTICATION & SYNC (FIREBASE / DEMO)
+        // --------------------------------------------------
+        function logMasukDemo() {
+            isDemoMode = true;
+            currentUser = { uid: "demo_user" };
+            // Muatkan profil demo rawak/kosong
+            tukarSkrin('skrinSetupProfil');
+        }
+
+        function logMasukEmel() {
+            const emel = document.getElementById('txtEmail').value.trim();
+            const laluan = document.getElementById('txtPassword').value.trim();
+
+            if (!emel || !laluan) {
+                alert("Sila isi emel dan kata laluan penjaga.");
+                return;
+            }
+
+            if (!database) {
+                alert("Firebase gagal disambung. Sila gunakan mod Demo buat masa ini.");
+                return;
+            }
+
+            firebase.auth().signInWithEmailAndPassword(emel, laluan)
+            .then((userCredential) => {
+                currentUser = userCredential.user;
+                muatDataDariCloud();
+            })
+            .catch((error) => {
+                alert("Ralat Log Masuk: " + error.message);
+            });
+        }
+
+        function daftarEmel() {
+            const emel = document.getElementById('txtEmail').value.trim();
+            const laluan = document.getElementById('txtPassword').value.trim();
+
+            if (!emel || !laluan) {
+                alert("Sila isi emel dan kata laluan untuk mendaftar.");
+                return;
+            }
+
+            if (!database) {
+                alert("Firebase gagal disambung.");
+                return;
+            }
+
+            firebase.auth().createUserWithEmailAndPassword(emel, laluan)
+            .then((userCredential) => {
+                currentUser = userCredential.user;
+                alert("Akaun berjaya didaftarkan!");
+                tukarSkrin('skrinSetupProfil');
+            })
+            .catch((error) => {
+                alert("Ralat Pendaftaran: " + error.message);
+            });
+        }
+
+        function simpanProfilAnak() {
+            profilKini.namaAnak = document.getElementById('txtNamaAnak').value.trim() || "Pengembara Cilik";
+            profilKini.umur = parseInt(document.getElementById('selUmurAnak').value);
+            profilKini.hadMasa = parseInt(document.getElementById('selHadMasa').value);
+            profilKini.tahap = document.getElementById('selTahap').value;
+
+            simpanDataKeCloud();
+            tukarSkrin('skrinMenu');
+            // Mainkan muzik latar selepas interaksi pertama
+            mainkanBunyi('sndBgm');
+        }
+
+        function simpanDataKeCloud() {
+            if (isDemoMode || !currentUser || !database) return;
+            database.ref('users/' + currentUser.uid).set(profilKini);
+        }
+
+        function muatDataDariCloud() {
+            if (!currentUser || !database) return;
+            database.ref('users/' + currentUser.uid).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    profilKini = snapshot.val();
+                    tukarSkrin('skrinMenu');
+                    mainkanBunyi('sndBgm');
+                } else {
+                    tukarSkrin('skrinSetupProfil');
+                }
+            });
+        }
+
+        function logKeluar() {
+            if (database && !isDemoMode) {
+                firebase.auth().signOut();
+            }
+            currentUser = null;
+            isDemoMode = false;
+            tukarSkrin('skrinLogin');
+        }
+
+        // --------------------------------------------------
+        // LOGIK PEMILIHAN DUNIA, TOPIK & MISI
+        // --------------------------------------------------
+        function pilihDunia(namaDunia) {
+            duniaSemasa = namaDunia;
+            document.getElementById('lblNamaDuniaSemasa').innerText = namaDunia;
+            
+            // Isi pilihan topik dropdown
+            const topics = dataDuniaPenuh[namaDunia] || [];
+            const sel = document.getElementById('selTopikSemasa');
+            sel.innerHTML = "";
+            
+            topics.forEach((t, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.innerText = `${t.emoji} ${t.nama}`;
+                sel.appendChild(opt);
+            });
+
+            topikIndexSemasa = 0;
+            kemaskiniSenaraiMisi();
+            tukarSkrin('skrinTopik');
+        }
+
+        function kemaskiniSenaraiMisi() {
+            topikIndexSemasa = parseInt(document.getElementById('selTopikSemasa').value) || 0;
+            const grid = document.getElementById('gridMisi');
+            grid.innerHTML = "";
+
+            // Setiap topik wajib ada 10 misi
+            for (let i = 1; i <= 10; i++) {
+                const keyMisi = `${duniaSemasa}_${topikIndexSemasa}_${i}`;
+                const isSelesai = profilKini.misiSelesai[keyMisi] ? true : false;
+                
+                const btn = document.createElement('button');
+                btn.className = `p-4 rounded-2xl font-black text-center flex flex-col items-center justify-center transition border-b-4 transform hover:scale-105 active:translate-y-1 ${
+                    isSelesai 
+                    ? 'bg-emerald-400 border-emerald-600 text-white' 
+                    : 'bg-white border-slate-300 text-slate-700 hover:bg-amber-50'
+                }`;
+                btn.onclick = () => mulaMisiGame(i);
+                
+                btn.innerHTML = `
+                    <span class="text-xs uppercase opacity-60">Misi</span>
+                    <span class="text-2xl">${i}</span>
+                    <span class="text-xs mt-1">${isSelesai ? '⭐ Selesai' : '🔒 Belum'}</span>
+                `;
+                grid.appendChild(btn);
+            }
+        }
+
+        // --------------------------------------------------
+        // ENJIN STRUKTUR GAMEPLAY & TRACING JARI
+        // --------------------------------------------------
+        function mulaMisiGame(nomborMisi) {
+            misiSemasa = nomborMisi;
+            const dataTopik = dataDuniaPenuh[duniaSemasa][topikIndexSemasa];
+            
+            document.getElementById('lblMisiTajuk').innerText = `Misi ${nomborMisi}`;
+            document.getElementById('lblTopkTajuk').innerText = dataTopik.nama;
+            
+            // Gandakan / Sediakan senarai soalan mengikut aras kesukaran (15-25 soalan)
+            let jumlahSoalanDiperlukan = 15;
+            if (profilKini.tahap === "Sederhana") jumlahSoalanDiperlukan = 20;
+            if (profilKini.tahap === "Sukar") jumlahSoalanDiperlukan = 25;
+
+            // Generate soalan rawak tanpa berulang daripada bank soalan
+            soalanMisiKini = [];
+            const bankAsal = dataTopik.soalan;
+            
+            for (let k = 0; k < jumlahSoalanDiperlukan; k++) {
+                // Ambil corak rawak daripada soalan sedia ada untuk simulasi permainan tanpa henti premium
+                const template = bankAsal[k % bankAsal.length];
+                soalanMisiKini.push(JSON.parse(JSON.stringify(template))); 
+            }
+
+            indexSoalanKini = 0;
+            soalanSelesaiCount = 0;
+            
+            tukarSkrin('skrinGame');
+            binaPaparanSoalanSemasa();
+        }
+
+        function keluarGame() {
+            if(confirm("Adakah anda mahu keluar dari misi pengembaraan ini? Progress misi semasa tidak disimpan.")) {
+                tukarSkrin('skrinTopik');
+            }
+        }
+
+        function binaPaparanSoalanSemasa() {
+            if (indexSoalanKini >= soalanMisiKini.length) {
+                tamatMisiDenganKemenangan();
+                return;
+            }
+
+            // Kemaskini progress kaunter atas
+            document.getElementById('lblIndexSoalan').innerText = indexSoalanKini + 1;
+            document.getElementById('lblTotalSoalan').innerText = soalanMisiKini.length;
+            const peratus = (indexSoalanKini / soalanMisiKini.length) * 100;
+            document.getElementById('barProgressGame').style.width = `${peratus}%`;
+
+            // Sorok maklumbalas BARARA terdahulu
+            document.getElementById('feedbackBarara').classList.add('opacity-0', 'scale-95');
+
+            const dataSoalan = soalanMisiKini[indexSoalanKini];
+            document.getElementById('lblArahanSoalan').innerText = dataSoalan.soalan;
+            
+            const txtVisual = document.getElementById('txtVisualEmoji');
+            const canvasTracing = document.getElementById('tracingCanvas');
+            const zonJawapan = document.getElementById('zonJawapan');
+            
+            // Reset elemen paparan utama
+            txtVisual.classList.remove('hidden');
+            canvasTracing.classList.add('hidden');
+            zonJawapan.innerHTML = "";
+
+            // Pilih kaedah binaan UI mengikut jenis aktiviti game
+            if (dataSoalan.jenis === "objektif" || dataSoalan.jenis === "isi_tempat_kosong") {
+                txtVisual.innerText = "❓";
+                
+                // Reka bentuk butang besar mesra kanak-kanak
+                const gridPilihan = document.createElement('div');
+                gridPilihan.className = "grid grid-cols-2 gap-4 max-w-md mx-auto";
+                
+                dataSoalan.pilihan.forEach(pil => {
+                    const btn = document.createElement('button');
+                    btn.className = "bg-amber-400 hover:bg-amber-500 text-white text-2xl font-black py-4 px-6 rounded-2xl border-b-8 border-amber-600 transition transform hover:scale-105 active:translate-y-1";
+                    btn.innerText = pil;
+                    btn.onclick = () => semakJawapanBetul(pil, dataSoalan.jawapan);
+                    gridPilihan.appendChild(btn);
+                });
+                zonJawapan.appendChild(gridPilihan);
+
+            } else if (dataSoalan.jenis === "pilih_gambar") {
+                txtVisual.innerText = "🔍";
+                
+                const gridPilihan = document.createElement('div');
+                gridPilihan.className = "grid grid-cols-2 gap-4 max-w-md mx-auto";
+                
+                dataSoalan.pilihan.forEach(pil => {
+                    const btn = document.createElement('button');
+                    btn.className = "bg-sky-100 hover:bg-sky-200 text-5xl py-6 rounded-3xl border-4 border-sky-300 transition transform hover:scale-105 active:translate-y-1";
+                    btn.innerText = pil;
+                    btn.onclick = () => semakJawapanBetul(pil, dataSoalan.jawapan);
+                    gridPilihan.appendChild(btn);
+                });
+                zonJawapan.appendChild(gridPilihan);
+
+            } else if (dataSoalan.jenis === "tracing") {
+                txtVisual.classList.add('hidden');
+                canvasTracing.classList.remove('hidden');
+                
+                // Sediakan kanvas untuk tracing huruf berkualiti tinggi
+                sediakanKanvasTracing(dataSoalan.target);
+
+                // Tambah butang selesai di bawah
+                const btnSelesaiLukis = document.createElement('button');
+                btnSelesaiLukis.className = "w-full max-w-xs bg-emerald-400 hover:bg-emerald-500 text-white font-black py-3 rounded-2xl shadow-md border-b-4 border-emerald-600 mt-4";
+                btnSelesaiLukis.innerText = "Saya Dah Siap Lukis! ✨";
+                btnSelesaiLukis.onclick = () => {
+                    mainkanBunyi('sndCorrect');
+                    paparFeedbackBarara(true);
+                    setTimeout(() => {
+                        indexSoalanKini++;
+                        binaPaparanSoalanSemasa();
+                    }, 1200);
+                };
+                zonJawapan.appendChild(btnSelesaiLukis);
+            }
+        }
+
+        function semakJawapanBetul(jawapanDipilih, jawapanTepat) {
+            if (jawapanDipilih === jawapanTepat) {
+                mainkanBunyi('sndCorrect');
+                paparFeedbackBarara(true);
+                
+                // Animasi mini letusan confetti setiap kali betul
+                confetti({ particleCount: 40, angle: 60, spread: 55, origin: { x: 0 } });
+                confetti({ particleCount: 40, angle: 120, spread: 55, origin: { x: 1 } });
+
+                setTimeout(() => {
+                    indexSoalanKini++;
+                    binaPaparanSoalanSemasa();
+                }, 1300);
+            } else {
+                mainkanBunyi('sndWrong');
+                paparFeedbackBarara(false);
+            }
+        }
+
+        function paparFeedbackBarara(adalahBetul) {
+            const fbBox = document.getElementById('feedbackBarara');
+            const fbTxt = document.getElementById('lblFeedbackTeks');
+            
+            fbBox.classList.remove('opacity-0', 'scale-95');
+            fbBox.classList.add('opacity-100', 'scale-100');
+            
+            if (adalahBetul) {
+                fbBox.className = "mt-4 bg-emerald-50 rounded-2xl p-3 border-2 border-emerald-200 flex items-center gap-3 transform transition duration-300";
+                fbTxt.innerText = `"${dialogSemangat[Math.floor(Math.random() * 2) + 3]}"`; // Mengambil ayat pujian BARARA
+            } else {
+                fbBox.className = "mt-4 bg-rose-50 rounded-2xl p-3 border-2 border-rose-200 flex items-center gap-3 transform transition duration-300";
+                fbTxt.innerText = `"Cuba lagi sayang, kita buat perlahan-lahan ya!"`;
+            }
+        }
+
+        // --------------------------------------------------
+        // SISTEM KANVAS TRACING PINTAR & RESPONSif
+        // --------------------------------------------------
+        function sediakanKanvasTracing(hurufTarget) {
+            canvas = document.getElementById('tracingCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Clear kanvas terdahulu
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Lukis bayangan huruf panduan di latar belakang secara jelas
+            ctx.font = "bold 130px Fredoka";
+            ctx.fillStyle = "#E2E8F0"; // Warna kelabu lembut panduan
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(hurufTarget, canvas.width / 2, canvas.height / 2 + 10);
+            
+            // Tetapan gaya berus melukis dakwat kanak-kanak
+            ctx.strokeStyle = "#38BDF8"; // Biru ceria
+            ctx.lineWidth = 14;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+
+            // Event Listeners Pintar untuk Sentuhan Jari Pintar Telefon/Tablet & Mouse
+            canvas.onmousedown = (e) => memulaLukis(e.offsetX, e.offsetY);
+            canvas.onmousemove = (e) => sedangLukis(e.offsetX, e.offsetY);
+            canvas.onmouseup = () => isDrawing = false;
+            
+            canvas.addEventListener('touchstart', (e) => {
+                const r = canvas.getBoundingClientRect();
+                const t = e.touches[0];
+                memulaLukis(t.clientX - r.left, t.clientY - r.top);
+                e.preventDefault();
+            });
+            canvas.addEventListener('touchmove', (e) => {
+                const r = canvas.getBoundingClientRect();
+                const t = e.touches[0];
+                sedangLukis(t.clientX - r.left, t.clientY - r.top);
+                e.preventDefault();
+            });
+            canvas.addEventListener('touchend', () => isDrawing = false);
+        }
+
+        function memulaLukis(x, y) {
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function sedangLukis(x, y) {
+            if (!isDrawing) return;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        // --------------------------------------------------
+        // KEPUTUSAN PENGEMBARAAN & SISTEM REWARD
+        // --------------------------------------------------
+        function tamatMisiDenganKemenangan() {
+            mainkanBunyi('sndWin');
+            
+            // Set data kemajuan misi selesai
+            const keyMisi = `${duniaSemasa}_${topikIndexSemasa}_${misiSemasa}`;
+            profilKini.misiSelesai[keyMisi] = true;
+            
+            // Beri ganjaran mata
+            profilKini.bintang = (profilKini.bintang || 0) + 3;
+            profilKini.syiling = (profilKini.syiling || 0) + 15;
+            
+            // Pilih satu aksesori secara rawak untuk di-unlock jika belum ada
+            let itemDiunlock = null;
+            const semuaKategori = ['topi', 'baju', 'aksesori'];
+            const katRawak = semuaKategori[Math.floor(Math.random() * semuaKategori.length)];
+            const senaraiPilihan = senaraiPakaianPenuh[katRawak];
+            
+            for (let item of senaraiPilihan) {
+                if (!profilKini.aksesoriDibuka.includes(item.id)) {
+                    profilKini.aksesoriDibuka.push(item.id);
+                    itemDiunlock = item;
+                    break;
+                }
+            }
+
+            // Sediakan Paparan Modal Ganjaran
+            document.getElementById('lblRewardBintang').innerText = 3;
+            document.getElementById('lblRewardSyiling').innerText = 15;
+            document.getElementById('boxHadiahIcon').innerText = "🎁";
+            document.getElementById('infoGanjaranDapat').classList.add('hidden');
+            
+            if (itemDiunlock) {
+                document.getElementById('lblNamaItemDapat').innerText = `${itemDiunlock.emoji} ${itemDiunlock.nama}`;
+                // Simpan rujukan sementara pada elemen hadiah untuk klik animasi
+                document.getElementById('boxHadiahIcon').setAttribute('data-reward-emoji', itemDiunlock.emoji);
+            } else {
+                document.getElementById('lblNamaItemDapat').innerText = "💎 Diamond Bonus!";
+                document.getElementById('boxHadiahIcon').setAttribute('data-reward-emoji', "💎");
+            }
+
+            // Letusan bunga api kejayaan penuh skrin
+            let end = Date.now() + (2 * 1000);
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+
+            document.getElementById('modalReward').classList.remove('hidden');
+            simpanDataKeCloud();
+        }
+
+        function bukaHadiahAnimasi() {
+            mainkanBunyi('sndClick');
+            const emojiReward = document.getElementById('boxHadiahIcon').getAttribute('data-reward-emoji') || "⭐";
+            document.getElementById('boxHadiahIcon').innerText = emojiReward;
+            document.getElementById('infoGanjaranDapat').classList.remove('hidden');
+        }
+
+        function tutupModalReward() {
+            document.getElementById('modalReward').classList.add('hidden');
+            tukarSkrin('skrinTopik');
+            kemaskiniSenaraiMisi();
+        }
+
+        // --------------------------------------------------
+        // CUSTOM AVATAR (ALMARI PAKAIAN BARARA)
+        // --------------------------------------------------
+        function bukaAlmari() {
+            tukarSkrin('skrinAlmari');
+            kemaskiniPaparanPatungBARARA();
+            tukarTabAlmari(tabAlmariSemasa);
+        }
+
+        function kemaskiniPaparanPatungBARARA() {
+            const p = profilKini.pakaianSemasa;
+            
+            const t = senaraiPakaianPenuh.topi.find(x => x.id === p.topi);
+            const b = senaraiPakaianPenuh.baju.find(x => x.id === p.baju);
+            const a = senaraiPakaianPenuh.aksesori.find(x => x.id === p.aksesori);
+
+            document.getElementById('layerTopi').innerText = t ? t.emoji : '';
+            document.getElementById('layerBaju').innerText = b ? b.emoji : '';
+            document.getElementById('layerAksesori').innerText = a ? a.emoji : '';
+        }
+
+        function tukarTabAlmari(kategori) {
+            tabAlmariSemasa = kategori;
+            
+            // Tukar warna butang tab aktif
+            ['topi', 'baju', 'aksesori'].forEach(k => {
+                const btn = document.getElementById(`btnTab-${k}`);
+                if (k === kategori) {
+                    btn.className = "font-bold text-sm px-4 py-1 rounded-full bg-purple-500 text-white";
+                } else {
+                    btn.className = "font-bold text-sm px-4 py-1 rounded-full bg-slate-100 text-slate-600";
+                }
+            });
+
+            const grid = document.getElementById('gridItemAlmari');
+            grid.innerHTML = "";
+
+            const itemKategori = senaraiPakaianPenuh[kategori] || [];
+            
+            itemKategori.forEach(item => {
+                const diUnlock = profilKini.aksesoriDibuka.includes(item.id);
+                const dipakai = profilKini.pakaianSemasa[kategori] === item.id;
+                
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-2xl border-2 text-center flex flex-col items-center justify-between transition cursor-pointer ${
+                    dipakai ? 'border-purple-500 bg-purple-50' : 'border-slate-200 bg-white hover:bg-slate-50'
+                } ${!diUnlock ? 'opacity-40 cursor-not-allowed' : ''}`;
+                
+                div.innerHTML = `
+                    <span class="text-3xl">${item.emoji}</span>
+                    <span class="text-[10px] font-bold text-slate-600 block leading-tight mt-1">${item.nama}</span>
+                    <span class="text-[9px] font-black uppercase mt-1 px-1.5 py-0.5 rounded ${
+                        dipakai ? 'bg-purple-500 text-white' : (diUnlock ? 'bg-slate-200 text-slate-700' : 'bg-red-200 text-red-700')
+                    }">${dipakai ? 'Dipakai' : (diUnlock ? 'Pilih' : '🔒 Misi')}</span>
+                `;
+                
+                if (diUnlock) {
+                    div.onclick = () => pakaikanAksesori(kategori, item.id);
+                }
+                grid.appendChild(div);
+            });
+        }
+
+        function pakaikanAksesori(kategori, itemId) {
+            mainkanBunyi('sndClick');
+            profilKini.pakaianSemasa[kategori] = itemId;
+            kemaskiniPaparanPatungBARARA();
+            tukarTabAlmari(kategori);
+            simpanDataKeCloud();
+        }
+
+        function kosongkanPakaian() {
+            profilKini.pakaianSemasa = { topi: '', baju: '', aksesori: '' };
+            kemaskiniPaparanPatungBARARA();
+            tukarTabAlmari(tabAlmariSemasa);
+            simpanDataKeCloud();
+        }
+
+        // --------------------------------------------------
+        // DASHBOARD IBU BAPA & ANALISIS PRESTASI
+        // --------------------------------------------------
+        function binaDashboardIbubapa() {
+            document.getElementById('lblDashNama').innerText = profilKini.namaAnak;
+            document.getElementById('lblDashUmur').innerText = profilKini.umur;
+            document.getElementById('lblDashTahap').innerText = profilKini.tahap;
+            
+            document.getElementById('selDashHadMasa').value = profilKini.hadMasa;
+            document.getElementById('selDashTahap').value = profilKini.tahap;
+
+            // Kira peratusan progress mengikut dunia (Kiraan simulasi komprehensif 10 misi setiap topik)
+            const dapatPeratusan = (namaDunia) => {
+                const topikDunia = dataDuniaPenuh[namaDunia] || [];
+                let jumlahMisiSelesai = 0;
+                let totalMisiKemungkinan = topikDunia.length * 10;
+                
+                if(totalMisiKemungkinan === 0) return 0;
+
+                topikDunia.forEach((t, tIdx) => {
+                    for(let m = 1; m <= 10; m++) {
+                        if(profilKini.misiSelesai[`${namaDunia}_${tIdx}_${m}`]) {
+                            jumlahMisiSelesai++;
+                        }
+                    }
+                });
+                return Math.round((jumlahMisiSelesai / totalMisiKemungkinan) * 100);
+            };
+
+            const pmBM = dapatPeratusan("Bahasa Melayu");
+            const pmEN = dapatPeratusan("English");
+            const pmMT = dapatPeratusan("Matematik");
+
+            document.getElementById('progressBM').innerText = pmBM + "%";
+            document.getElementById('progressEN').innerText = pmEN + "%";
+            document.getElementById('progressMT').innerText = pmMT + "%";
+
+            document.getElementById('lblDashBM').innerText = pmBM + "%";
+            document.getElementById('lblDashEN').innerText = pmEN + "%";
+            document.getElementById('lblDashMT').innerText = pmMT + "%";
+
+            // Sediakan teks cadangan dinamik premium pintar
+            const cadanganBox = document.getElementById('lblDashCadangan');
+            if (pmBM === 0 && pmEN === 0 && pmMT === 0) {
+                cadanganBox.innerText = "Sila galakkan anak anda menyelesaikan misi pertama di Dunia Bahasa Melayu atau Matematik hari ini!";
+            } else if (pmMT < pmBM) {
+                cadanganBox.innerText = "Bagus! Fokus membaca berkembang baik. Seterusnya, mari seimbangkan dengan Dunia Matematik (Membilang Nombor) bersama BARARA.";
+            } else {
+                cadanganBox.innerText = "Hebat! Teruskan rentak cemerlang ini. Cuba buka lebih banyak aksesori pakaian dengan meneroka subjek English Alphabet.";
+            }
+        }
+
+        function kemaskiniTetapanDash() {
+            profilKini.hadMasa = parseInt(document.getElementById('selDashHadMasa').value);
+            profilKini.tahap = document.getElementById('selDashTahap').value;
+            simpanDataKeCloud();
+            
+            // Segarkan info paparan
+            document.getElementById('lblDashTahap').innerText = profilKini.tahap;
+        }
+    </script>
+</body>
+</html>
