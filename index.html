@@ -771,33 +771,37 @@
         // ENJIN STRUKTUR GAMEPLAY & TRACING JARI
         // --------------------------------------------------
         function mulaMisiGame(nomborMisi) {
-            misiSemasa = nomborMisi;
-            const dataTopik = dataDuniaPenuh[duniaSemasa][topikIndexSemasa];
-            
-            document.getElementById('lblMisiTajuk').innerText = `Misi ${nomborMisi}`;
-            document.getElementById('lblTopkTajuk').innerText = dataTopik.nama;
-            
-            // Gandakan / Sediakan senarai soalan mengikut aras kesukaran (15-25 soalan)
-            let jumlahSoalanDiperlukan = 15;
-            if (profilKini.tahap === "Sederhana") jumlahSoalanDiperlukan = 20;
-            if (profilKini.tahap === "Sukar") jumlahSoalanDiperlukan = 25;
-
-            // Generate soalan rawak tanpa berulang daripada bank soalan
-            soalanMisiKini = [];
-            const bankAsal = dataTopik.soalan;
-            
-            for (let k = 0; k < jumlahSoalanDiperlukan; k++) {
-                // Ambil corak rawak daripada soalan sedia ada untuk simulasi permainan tanpa henti premium
-                const template = bankAsal[k % bankAsal.length];
-                soalanMisiKini.push(JSON.parse(JSON.stringify(template))); 
-            }
-
-            indexSoalanKini = 0;
-            soalanSelesaiCount = 0;
-            
-            tukarSkrin('skrinGame');
-            binaPaparanSoalanSemasa();
+    misiSemasa = nomborMisi; 
+    const dataTopik = dataDuniaPenuh[duniaSemasa][topikIndexSemasa];
+    document.getElementById('lblMisiTajuk').innerText = `Misi ${nomborMisi}`;
+    document.getElementById('lblTopkTajuk').innerText = dataTopik.nama;
+    
+    // 1. Tentukan jumlah target soalan berdasarkan tahap kesukaran
+    let targetCount = profilKini.tahap === "Easy" ? 10 : (profilKini.tahap === "Sukar" ? 20 : 15);
+    
+    // 2. Salin senarai asal dan buat pusingan rawak (Shuffle) kali pertama
+    let soalanAsalRawak = [...dataTopik.soalan].sort(() => Math.random() - 0.5);
+    soalanMisiKini = [];
+    
+    // 3. Masukkan soalan ke dalam misi. Jika tak cukup, kita klon & rawak pilihan jawapan
+    for(let i = 0; i < targetCount; i++) {
+        let soalanKlon = JSON.parse(JSON.stringify(soalanAsalRawak[i % soalanAsalRawak.length]));
+        
+        // Jika jenis objektif/pilih gambar, kita rawakkan susunan butang pilihan jawapan
+        if(soalanKlon.pilihan) {
+            soalanKlon.pilihan.sort(() => Math.random() - 0.5);
         }
+        
+        soalanMisiKini.push(soalanKlon);
+    }
+    
+    // 4. Rawakkan keseluruhan senarai akhir supaya soalan yang sama tidak berturutan
+    soalanMisiKini.sort(() => Math.random() - 0.5);
+    
+    indexSoalanKini = 0; 
+    tukarSkrin('skrinGame'); 
+    binaPaparanSoalanSemasa();
+}
 
         function keluarGame() {
             if(confirm("Adakah anda mahu keluar dari misi pengembaraan ini? Progress misi semasa tidak disimpan.")) {
