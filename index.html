@@ -63,13 +63,6 @@
 </head>
 <body class="min-h-screen text-slate-800 antialiased overflow-x-hidden">
 
-    <!-- AUDIO ELEMENTS -->
-    <audio id="sndClick" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
-    <audio id="sndCorrect" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav" preload="auto"></audio>
-    <audio id="sndWrong" src="https://assets.mixkit.co/active_storage/sfx/951/951-84.wav" preload="auto"></audio>
-    <audio id="sndWin" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav" preload="auto"></audio>
-    <audio id="sndBgm" src="https://assets.mixkit.co/active_storage/sfx/123/123-84.wav" loop preload="auto"></audio>
-
     <!-- HEADER UTAMA (Sentiasa Ada Kecuali di Skrin Game) -->
     <header id="mainHeader" class="hidden bg-white/80 backdrop-blur-md shadow-md sticky top-0 z-40 px-4 py-2 flex justify-between items-center border-b-4 border-amber-400">
         <div class="flex items-center gap-2 cursor-pointer" onclick="tukarSkrin('skrinMenu')">
@@ -99,8 +92,10 @@
 
         <!-- 1. SKRIN LOGIN -->
         <section id="skrinLogin" class="block bg-white rounded-3xl p-8 shadow-2xl max-w-md mx-auto mt-10 text-center border-t-8 border-cyan-400">
-            <div class="w-32 h-32 bg-amber-200 rounded-full mx-auto flex items-center justify-center text-6xl bouncy shadow-inner relative">
-                🦫
+            <div class="w-32 h-32 bg-amber-200 rounded-full mx-auto flex items-center justify-center bouncy shadow-inner relative">
+                <svg viewBox="0 0 200 200" width="88" height="88" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="100" cy="115" rx="82" ry="58" fill="#C9A66B"/><ellipse cx="42" cy="78" rx="15" ry="17" fill="#C9A66B"/><ellipse cx="158" cy="78" rx="15" ry="17" fill="#C9A66B"/><ellipse cx="42" cy="80" rx="7" ry="9" fill="#A9825A"/><ellipse cx="158" cy="80" rx="7" ry="9" fill="#A9825A"/><ellipse cx="100" cy="134" rx="64" ry="40" fill="#DDBB86"/><ellipse cx="76" cy="98" rx="7.5" ry="8.5" fill="#33324A"/><ellipse cx="124" cy="98" rx="7.5" ry="8.5" fill="#33324A"/><ellipse cx="79" cy="95" rx="2.3" ry="2.8" fill="#fff"/><ellipse cx="127" cy="95" rx="2.3" ry="2.8" fill="#fff"/><ellipse cx="86" cy="128" rx="5.5" ry="4" fill="#8A6B42"/><ellipse cx="114" cy="128" rx="5.5" ry="4" fill="#8A6B42"/><path d="M78 148 Q100 162 122 148" stroke="#8A6B42" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="58" cy="120" rx="9" ry="6" fill="#F0A8B8" opacity="0.55"/><ellipse cx="142" cy="120" rx="9" ry="6" fill="#F0A8B8" opacity="0.55"/><path d="M40 168 Q100 190 160 168 L160 178 Q100 200 40 178 Z" fill="#7FC7EE"/><path d="M78 172 Q100 184 122 172 L122 180 Q100 192 78 180 Z" fill="#5FAEE0"/><circle cx="100" cy="182" r="12" fill="#FFE59A" stroke="#F3C13B" stroke-width="2"/><path d="M100 174 l2.5 6.5 7 0.8 -5 4.8 1.5 7 -6 -3.5 -6 3.5 1.5 -7 -5 -4.8 7 -0.8 z" fill="#F3C13B"/>
+                </svg>
                 <div class="absolute -bottom-1 -right-1 bg-cyan-400 text-white text-xs font-bold px-2 py-0.5 rounded-full">BARARA</div>
             </div>
             <h1 class="text-3xl font-black text-slate-800 mt-4 tracking-tight">Misi BARARA</h1>
@@ -129,39 +124,59 @@
         <!-- 2. SKRIN PENDAFTARAN PROFIL ANAK (SETUP PERTAMA) -->
         <section id="skrinSetupProfil" class="hidden bg-white rounded-3xl p-8 shadow-2xl max-w-md mx-auto mt-10 border-t-8 border-emerald-400">
             <h2 class="text-2xl font-black text-center text-slate-800">Kenali Pengembara Cilik!</h2>
-            <p class="text-center text-slate-500 text-sm mb-6">BARARA tak sabar nak tahu nama kawan baharu!</p>
+            <p class="text-center text-slate-500 text-sm mb-6">BARARA tak sabar nak tahu kawan baharu!</p>
             
-            <div class="space-y-4">
+            <div class="space-y-5">
                 <div>
                     <label class="block text-sm font-bold text-slate-600 mb-1">Nama Manja Anak:</label>
                     <input type="text" id="txtNamaAnak" placeholder="Contoh: Adam, Iris" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-emerald-400 focus:outline-none font-medium">
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-slate-600 mb-1">Umur Anak:</label>
-                    <select id="selUmurAnak" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-emerald-400 focus:outline-none font-medium">
-                        <option value="4">4 Tahun (Tadika)</option>
-                        <option value="5">5 Tahun (Tadika)</option>
-                        <option value="6">6 Tahun (Prasekolah)</option>
-                        <option value="7">7 Tahun (Sekolah Rendah)</option>
-                    </select>
+                    <label class="block text-sm font-bold text-slate-600 mb-2">Umur Anak:</label>
+                    <div class="grid grid-cols-2 gap-3" id="grpUmurBtn">
+                        <button type="button" onclick="pilihUmurBtn(4)" data-val="4" class="btn-pilih-umur rounded-2xl border-2 border-slate-200 py-3 px-2 text-center font-bold text-slate-600 transition hover:border-emerald-300">
+                            <span class="block text-xl">4 <span class="text-xs font-normal">tahun</span></span>
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase">Tadika</span>
+                        </button>
+                        <button type="button" onclick="pilihUmurBtn(5)" data-val="5" class="btn-pilih-umur rounded-2xl border-2 border-slate-200 py-3 px-2 text-center font-bold text-slate-600 transition hover:border-emerald-300">
+                            <span class="block text-xl">5 <span class="text-xs font-normal">tahun</span></span>
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase">Tadika</span>
+                        </button>
+                        <button type="button" onclick="pilihUmurBtn(6)" data-val="6" class="btn-pilih-umur rounded-2xl border-2 border-slate-200 py-3 px-2 text-center font-bold text-slate-600 transition hover:border-emerald-300">
+                            <span class="block text-xl">6 <span class="text-xs font-normal">tahun</span></span>
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase">Prasekolah</span>
+                        </button>
+                        <button type="button" onclick="pilihUmurBtn(7)" data-val="7" class="btn-pilih-umur rounded-2xl border-2 border-slate-200 py-3 px-2 text-center font-bold text-slate-600 transition hover:border-emerald-300">
+                            <span class="block text-xl">7 <span class="text-xs font-normal">tahun</span></span>
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase">Sek. Rendah</span>
+                        </button>
+                    </div>
+                    <p id="lblPetunjukUmur" class="text-xs text-emerald-600 font-bold mt-2 text-center">🌟 Soalan akan disesuaikan untuk umur 5 tahun.</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-slate-600 mb-1">Had Masa Bermain Sehari:</label>
-                    <select id="selHadMasa" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-emerald-400 focus:outline-none font-medium">
-                        <option value="5">5 Minit</option>
-                        <option value="10">10 Minit</option>
-                        <option value="15" selected>15 Minit</option>
-                        <option value="20">20 Minit</option>
-                        <option value="30">30 Minit</option>
-                    </select>
+                    <label class="block text-sm font-bold text-slate-600 mb-2">Had Masa Bermain Sehari:</label>
+                    <div class="flex flex-wrap gap-2" id="grpHadMasaBtn">
+                        <button type="button" onclick="pilihHadMasaBtn(5)" data-val="5" class="btn-pilih-hadmasa rounded-full border-2 border-slate-200 px-4 py-2 font-bold text-sm text-slate-600 transition hover:border-emerald-300">5 Minit</button>
+                        <button type="button" onclick="pilihHadMasaBtn(10)" data-val="10" class="btn-pilih-hadmasa rounded-full border-2 border-slate-200 px-4 py-2 font-bold text-sm text-slate-600 transition hover:border-emerald-300">10 Minit</button>
+                        <button type="button" onclick="pilihHadMasaBtn(15)" data-val="15" class="btn-pilih-hadmasa rounded-full border-2 border-slate-200 px-4 py-2 font-bold text-sm text-slate-600 transition hover:border-emerald-300">15 Minit</button>
+                        <button type="button" onclick="pilihHadMasaBtn(20)" data-val="20" class="btn-pilih-hadmasa rounded-full border-2 border-slate-200 px-4 py-2 font-bold text-sm text-slate-600 transition hover:border-emerald-300">20 Minit</button>
+                        <button type="button" onclick="pilihHadMasaBtn(30)" data-val="30" class="btn-pilih-hadmasa rounded-full border-2 border-slate-200 px-4 py-2 font-bold text-sm text-slate-600 transition hover:border-emerald-300">30 Minit</button>
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-slate-600 mb-1">Tahap Kesukaran Asas:</label>
-                    <select id="selTahap" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-emerald-400 focus:outline-none font-medium">
-                        <option value="Mudah">Mudah (Bimbingan Penuh)</option>
-                        <option value="Sederhana" selected>Sederhana</option>
-                        <option value="Sukar">Sukar (Masa Lebih Cepat)</option>
-                    </select>
+                    <label class="block text-sm font-bold text-slate-600 mb-2">Tahap Kesukaran Asas:</label>
+                    <div class="grid grid-cols-3 gap-2" id="grpTahapBtn">
+                        <button type="button" onclick="pilihTahapBtn('Mudah')" data-val="Mudah" class="btn-pilih-tahap rounded-2xl border-2 border-slate-200 py-3 px-1 text-center font-bold text-sm text-slate-600 transition hover:border-emerald-300">
+                            🌱<br>Mudah
+                        </button>
+                        <button type="button" onclick="pilihTahapBtn('Sederhana')" data-val="Sederhana" class="btn-pilih-tahap rounded-2xl border-2 border-slate-200 py-3 px-1 text-center font-bold text-sm text-slate-600 transition hover:border-emerald-300">
+                            🌟<br>Sederhana
+                        </button>
+                        <button type="button" onclick="pilihTahapBtn('Sukar')" data-val="Sukar" class="btn-pilih-tahap rounded-2xl border-2 border-slate-200 py-3 px-1 text-center font-bold text-sm text-slate-600 transition hover:border-emerald-300">
+                            🔥<br>Sukar
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2 text-center">💡 Umur anak akan bantu BARARA sesuaikan panjang & kesukaran soalan secara automatik.</p>
                 </div>
                 <button onclick="simpanProfilAnak()" class="w-full bg-emerald-400 hover:bg-emerald-500 text-white text-lg font-bold py-3 rounded-xl shadow-lg border-b-4 border-emerald-600 transition active:translate-y-1 mt-2">
                     Siap! Jom Masuk Dunia BARARA ✨
@@ -173,8 +188,10 @@
         <section id="skrinMenu" class="hidden space-y-6">
             <!-- Bubble Dialog BARARA -->
             <div class="bg-white rounded-3xl p-4 shadow-md flex items-center gap-4 border-l-8 border-amber-400 relative">
-                <div class="text-4xl bg-amber-100 p-2 rounded-2xl shadow-inner relative">
-                    🦫
+                <div class="bg-amber-100 p-2 rounded-2xl shadow-inner relative flex items-center justify-center" style="width:52px;height:52px;">
+                    <svg viewBox="0 0 200 200" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="100" cy="115" rx="82" ry="58" fill="#C9A66B"/><ellipse cx="42" cy="78" rx="15" ry="17" fill="#C9A66B"/><ellipse cx="158" cy="78" rx="15" ry="17" fill="#C9A66B"/><ellipse cx="42" cy="80" rx="7" ry="9" fill="#A9825A"/><ellipse cx="158" cy="80" rx="7" ry="9" fill="#A9825A"/><ellipse cx="100" cy="134" rx="64" ry="40" fill="#DDBB86"/><ellipse cx="76" cy="98" rx="7.5" ry="8.5" fill="#33324A"/><ellipse cx="124" cy="98" rx="7.5" ry="8.5" fill="#33324A"/><ellipse cx="79" cy="95" rx="2.3" ry="2.8" fill="#fff"/><ellipse cx="127" cy="95" rx="2.3" ry="2.8" fill="#fff"/><ellipse cx="86" cy="128" rx="5.5" ry="4" fill="#8A6B42"/><ellipse cx="114" cy="128" rx="5.5" ry="4" fill="#8A6B42"/><path d="M78 148 Q100 162 122 148" stroke="#8A6B42" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="58" cy="120" rx="9" ry="6" fill="#F0A8B8" opacity="0.55"/><ellipse cx="142" cy="120" rx="9" ry="6" fill="#F0A8B8" opacity="0.55"/><path d="M40 168 Q100 190 160 168 L160 178 Q100 200 40 178 Z" fill="#7FC7EE"/><path d="M78 172 Q100 184 122 172 L122 180 Q100 192 78 180 Z" fill="#5FAEE0"/><circle cx="100" cy="182" r="12" fill="#FFE59A" stroke="#F3C13B" stroke-width="2"/><path d="M100 174 l2.5 6.5 7 0.8 -5 4.8 1.5 7 -6 -3.5 -6 3.5 1.5 -7 -5 -4.8 7 -0.8 z" fill="#F3C13B"/>
+                    </svg>
                     <div id="avatarAksesoriMini" class="absolute top-0 left-0 w-full h-full pointer-events-none flex items-center justify-center text-xs"></div>
                 </div>
                 <div>
@@ -232,13 +249,48 @@
             </div>
 
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Pilih Topik:</label>
-                <select id="selTopikSemasa" onchange="kemaskiniSenaraiMisi()" class="w-full p-2 rounded-xl border border-slate-200 text-lg font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400"></select>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Pilih Topik:</label>
+                <div id="gridTopik" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
             </div>
 
             <h3 class="text-lg font-black text-slate-700 tracking-wide mt-4">Peta Misi Pengembaraan 🗺️</h3>
             <div id="gridMisi" class="grid grid-cols-2 sm:grid-cols-5 gap-4">
                 <!-- Diisi dinamik oleh JS (10 Misi) -->
+            </div>
+        </section>
+
+        <!-- 4B. SKRIN PILIH SIFIR (BANTUAN HAFALAN SIFIR 2-12) -->
+        <section id="skrinPilihSifir" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="tukarSkrin('skrinTopik')" class="bg-slate-500 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl text-sm shadow transition"><i class="fas fa-arrow-left mr-2"></i> Kembali</button>
+                <h2 class="text-2xl font-black text-slate-800">🧠 Hafalan Sifir</h2>
+            </div>
+            <p class="text-center text-slate-500 font-bold text-sm">Pilih sifir yang nak dihafal. BARARA akan sebut satu-satu untuk bantu ingat!</p>
+            <div id="gridPilihSifir" class="grid grid-cols-3 sm:grid-cols-4 gap-4"></div>
+        </section>
+
+        <!-- 4C. SKRIN LATIHAN SIFIR (PAPAR SATU-SATU + SUARA) -->
+        <section id="skrinLatihanSifir" class="hidden">
+            <div class="flex justify-between items-center bg-white/90 p-3 rounded-2xl shadow mb-4">
+                <button onclick="tukarSkrin('skrinPilihSifir')" class="bg-slate-500 hover:bg-slate-600 text-white font-bold px-3 py-2 rounded-xl text-xs shadow transition"><i class="fas fa-arrow-left mr-1"></i> Sifir Lain</button>
+                <h2 id="lblSifirTajuk" class="text-lg font-black text-slate-800">Sifir 2</h2>
+                <span class="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-1 rounded-lg">Fakta <span id="lblSifirIndex">1</span>/<span id="lblSifirTotal">11</span></span>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-xl p-8 sm:p-14 text-center border-t-8 border-purple-400 max-w-lg mx-auto">
+                <div id="boxFaktaSifir" class="text-4xl sm:text-6xl font-black text-slate-800 tracking-wide mb-6">2 × 2 = 4</div>
+                <button onclick="bacaFaktaSifirSemasa()" class="bg-purple-500 hover:bg-purple-600 text-white font-black py-3 px-8 rounded-full shadow-lg border-b-4 border-purple-700 transition transform active:translate-y-1 text-lg">
+                    🔊 Dengar Sebutan
+                </button>
+
+                <div class="mt-4 bg-purple-50 rounded-2xl overflow-hidden h-3">
+                    <div id="barProgressSifir" class="bg-purple-400 h-full transition-all duration-500" style="width:9%;"></div>
+                </div>
+
+                <div class="flex justify-between items-center mt-8 gap-3">
+                    <button onclick="navSifir(-1)" id="btnSifirSebelum" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black py-3 rounded-2xl transition disabled:opacity-30">⬅ Sebelum</button>
+                    <button onclick="navSifir(1)" id="btnSifirSeterusnya" class="flex-1 bg-emerald-400 hover:bg-emerald-500 text-white font-black py-3 rounded-2xl transition shadow-md border-b-4 border-emerald-600">Seterusnya ➡</button>
+                </div>
             </div>
         </section>
 
@@ -252,6 +304,7 @@
                     <span id="lblTopkTajuk" class="block text-sm font-black text-slate-700">Topik</span>
                 </div>
                 <div class="flex items-center gap-2">
+                    <button onclick="togolSuara()" id="btnTogolSuara" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1.5 rounded-lg hover:bg-purple-200 transition">🔊</button>
                     <span class="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-1 rounded-lg">Soalan: <span id="lblIndexSoalan">1</span>/<span id="lblTotalSoalan">15</span></span>
                 </div>
             </div>
@@ -283,7 +336,11 @@
 
             <!-- Bubble Dialog Maklumbalas BARARA Semasa Game -->
             <div id="feedbackBarara" class="mt-4 bg-amber-50 rounded-2xl p-3 border-2 border-amber-200 flex items-center gap-3 transform scale-95 opacity-0 transition duration-300">
-                <div class="text-3xl">🦫</div>
+                <div class="w-9 h-9 flex items-center justify-center">
+                    <svg viewBox="0 0 200 200" width="34" height="34" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="100" cy="115" rx="82" ry="58" fill="#C9A66B"/><ellipse cx="42" cy="78" rx="15" ry="17" fill="#C9A66B"/><ellipse cx="158" cy="78" rx="15" ry="17" fill="#C9A66B"/><ellipse cx="42" cy="80" rx="7" ry="9" fill="#A9825A"/><ellipse cx="158" cy="80" rx="7" ry="9" fill="#A9825A"/><ellipse cx="100" cy="134" rx="64" ry="40" fill="#DDBB86"/><ellipse cx="76" cy="98" rx="7.5" ry="8.5" fill="#33324A"/><ellipse cx="124" cy="98" rx="7.5" ry="8.5" fill="#33324A"/><ellipse cx="79" cy="95" rx="2.3" ry="2.8" fill="#fff"/><ellipse cx="127" cy="95" rx="2.3" ry="2.8" fill="#fff"/><ellipse cx="86" cy="128" rx="5.5" ry="4" fill="#8A6B42"/><ellipse cx="114" cy="128" rx="5.5" ry="4" fill="#8A6B42"/><path d="M78 148 Q100 162 122 148" stroke="#8A6B42" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="58" cy="120" rx="9" ry="6" fill="#F0A8B8" opacity="0.55"/><ellipse cx="142" cy="120" rx="9" ry="6" fill="#F0A8B8" opacity="0.55"/><path d="M40 168 Q100 190 160 168 L160 178 Q100 200 40 178 Z" fill="#7FC7EE"/><path d="M78 172 Q100 184 122 172 L122 180 Q100 192 78 180 Z" fill="#5FAEE0"/><circle cx="100" cy="182" r="12" fill="#FFE59A" stroke="#F3C13B" stroke-width="2"/><path d="M100 174 l2.5 6.5 7 0.8 -5 4.8 1.5 7 -6 -3.5 -6 3.5 1.5 -7 -5 -4.8 7 -0.8 z" fill="#F3C13B"/>
+                    </svg>
+                </div>
                 <p id="lblFeedbackTeks" class="font-bold text-amber-800 text-sm">"Hebat! Jom teruskan lagi!"</p>
             </div>
         </section>
@@ -301,8 +358,10 @@
                     <h3 class="font-black text-slate-600 text-sm uppercase">Penampilan Semasa</h3>
                     
                     <!-- Patung BARARA Besar beserta Lapisan Pakaian -->
-                    <div class="w-40 h-40 bg-gradient-to-tr from-amber-100 to-yellow-200 rounded-full flex items-center justify-center text-7xl relative shadow-inner my-4 bouncy">
-                        🦫
+                    <div class="w-40 h-40 bg-gradient-to-tr from-amber-100 to-yellow-200 rounded-full flex items-center justify-center relative shadow-inner my-4 bouncy">
+                        <svg viewBox="0 0 200 200" width="112" height="112" xmlns="http://www.w3.org/2000/svg">
+                            <ellipse cx="100" cy="115" rx="82" ry="58" fill="#C9A66B"/><ellipse cx="42" cy="78" rx="15" ry="17" fill="#C9A66B"/><ellipse cx="158" cy="78" rx="15" ry="17" fill="#C9A66B"/><ellipse cx="42" cy="80" rx="7" ry="9" fill="#A9825A"/><ellipse cx="158" cy="80" rx="7" ry="9" fill="#A9825A"/><ellipse cx="100" cy="134" rx="64" ry="40" fill="#DDBB86"/><ellipse cx="76" cy="98" rx="7.5" ry="8.5" fill="#33324A"/><ellipse cx="124" cy="98" rx="7.5" ry="8.5" fill="#33324A"/><ellipse cx="79" cy="95" rx="2.3" ry="2.8" fill="#fff"/><ellipse cx="127" cy="95" rx="2.3" ry="2.8" fill="#fff"/><ellipse cx="86" cy="128" rx="5.5" ry="4" fill="#8A6B42"/><ellipse cx="114" cy="128" rx="5.5" ry="4" fill="#8A6B42"/><path d="M78 148 Q100 162 122 148" stroke="#8A6B42" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="58" cy="120" rx="9" ry="6" fill="#F0A8B8" opacity="0.55"/><ellipse cx="142" cy="120" rx="9" ry="6" fill="#F0A8B8" opacity="0.55"/><path d="M40 168 Q100 190 160 168 L160 178 Q100 200 40 178 Z" fill="#7FC7EE"/><path d="M78 172 Q100 184 122 172 L122 180 Q100 192 78 180 Z" fill="#5FAEE0"/><circle cx="100" cy="182" r="12" fill="#FFE59A" stroke="#F3C13B" stroke-width="2"/><path d="M100 174 l2.5 6.5 7 0.8 -5 4.8 1.5 7 -6 -3.5 -6 3.5 1.5 -7 -5 -4.8 7 -0.8 z" fill="#F3C13B"/>
+                        </svg>
                         <!-- Lapisan Aksesori Di Sini -->
                         <div id="layerTopi" class="absolute top-2 text-3xl"></div>
                         <div id="layerBaju" class="absolute bottom-4 text-4xl"></div>
@@ -483,43 +542,430 @@
         const dataDuniaPenuh = {
             "Bahasa Melayu": [
                 { nama: "Huruf & Abjad", emoji: "🔤", soalan: [
-                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'A'", pilihan: ["a", "b", "c", "d"], jawapan: "a" },
-                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'm'", pilihan: ["M", "N", "W", "V"], jawapan: "M" },
                     { jenis: "pilih_gambar", soalan: "Manakah huruf 'b'?", pilihan: ["🅰️", "🅱️", "🆃", "🆂"], jawapan: "🅱️" },
-                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'A'", target: "A" }
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'A'", target: "A" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'B'", target: "B" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'C'", target: "C" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'D'", target: "D" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'E'", target: "E" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'F'", target: "F" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'G'", target: "G" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'H'", target: "H" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'I'", target: "I" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'J'", target: "J" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'K'", target: "K" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'L'", target: "L" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'M'", target: "M" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'N'", target: "N" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'O'", target: "O" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'P'", target: "P" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'Q'", target: "Q" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'R'", target: "R" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'S'", target: "S" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'T'", target: "T" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'U'", target: "U" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'V'", target: "V" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'W'", target: "W" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'X'", target: "X" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'Y'", target: "Y" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis huruf 'Z'", target: "Z" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'A'", pilihan: ["v", "b", "a", "e"], jawapan: "a" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'B'", pilihan: ["e", "f", "y", "b"], jawapan: "b" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'C'", pilihan: ["d", "a", "c", "b"], jawapan: "c" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'D'", pilihan: ["h", "s", "d", "x"], jawapan: "d" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'E'", pilihan: ["e", "a", "j", "t"], jawapan: "e" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'F'", pilihan: ["j", "f", "e", "l"], jawapan: "f" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'G'", pilihan: ["g", "d", "c", "n"], jawapan: "g" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'H'", pilihan: ["y", "p", "b", "h"], jawapan: "h" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'I'", pilihan: ["s", "i", "v", "k"], jawapan: "i" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'J'", pilihan: ["c", "j", "b", "x"], jawapan: "j" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'K'", pilihan: ["k", "n", "h", "d"], jawapan: "k" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'L'", pilihan: ["f", "l", "g", "m"], jawapan: "l" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'M'", pilihan: ["v", "f", "m", "u"], jawapan: "m" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'N'", pilihan: ["n", "v", "i", "m"], jawapan: "n" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'O'", pilihan: ["h", "b", "z", "o"], jawapan: "o" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'P'", pilihan: ["g", "i", "p", "c"], jawapan: "p" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'Q'", pilihan: ["v", "q", "o", "m"], jawapan: "q" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'R'", pilihan: ["r", "h", "s", "y"], jawapan: "r" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'S'", pilihan: ["m", "l", "s", "t"], jawapan: "s" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'T'", pilihan: ["c", "z", "b", "t"], jawapan: "t" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'U'", pilihan: ["t", "n", "w", "u"], jawapan: "u" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'V'", pilihan: ["t", "v", "q", "o"], jawapan: "v" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'W'", pilihan: ["w", "v", "d", "y"], jawapan: "w" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'X'", pilihan: ["j", "x", "n", "d"], jawapan: "x" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'Y'", pilihan: ["q", "y", "i", "x"], jawapan: "y" },
+                    { jenis: "objektif", soalan: "Pilih huruf kecil bagi 'Z'", pilihan: ["j", "q", "z", "u"], jawapan: "z" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'a'", pilihan: ["S", "Z", "G", "A"], jawapan: "A" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'b'", pilihan: ["E", "B", "Q", "A"], jawapan: "B" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'c'", pilihan: ["I", "B", "T", "C"], jawapan: "C" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'd'", pilihan: ["Z", "S", "D", "C"], jawapan: "D" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'e'", pilihan: ["S", "G", "E", "J"], jawapan: "E" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'f'", pilihan: ["F", "N", "X", "K"], jawapan: "F" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'g'", pilihan: ["D", "C", "G", "I"], jawapan: "G" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'h'", pilihan: ["T", "A", "I", "H"], jawapan: "H" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'i'", pilihan: ["H", "B", "I", "C"], jawapan: "I" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'j'", pilihan: ["Q", "J", "W", "I"], jawapan: "J" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'k'", pilihan: ["K", "T", "Q", "Y"], jawapan: "K" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'l'", pilihan: ["L", "D", "G", "W"], jawapan: "L" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'm'", pilihan: ["O", "Y", "P", "M"], jawapan: "M" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'n'", pilihan: ["B", "Y", "N", "M"], jawapan: "N" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'o'", pilihan: ["S", "O", "P", "G"], jawapan: "O" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'p'", pilihan: ["O", "H", "I", "P"], jawapan: "P" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'q'", pilihan: ["B", "V", "S", "Q"], jawapan: "Q" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'r'", pilihan: ["N", "F", "R", "P"], jawapan: "R" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 's'", pilihan: ["M", "F", "B", "S"], jawapan: "S" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 't'", pilihan: ["O", "J", "T", "N"], jawapan: "T" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'u'", pilihan: ["B", "J", "G", "U"], jawapan: "U" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'v'", pilihan: ["P", "S", "V", "B"], jawapan: "V" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'w'", pilihan: ["F", "T", "C", "W"], jawapan: "W" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'x'", pilihan: ["S", "X", "D", "M"], jawapan: "X" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'y'", pilihan: ["N", "Y", "T", "C"], jawapan: "Y" },
+                    { jenis: "objektif", soalan: "Pilih huruf besar bagi 'z'", pilihan: ["Z", "W", "K", "V"], jawapan: "Z" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'A'?", pilihan: ["B", "V", "F", "W"], jawapan: "B" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'B'?", pilihan: ["Z", "C", "D", "A"], jawapan: "C" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'B'?", pilihan: ["H", "D", "A", "S"], jawapan: "A" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'C'?", pilihan: ["M", "C", "D", "I"], jawapan: "D" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'C'?", pilihan: ["K", "S", "X", "B"], jawapan: "B" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'D'?", pilihan: ["W", "F", "E", "D"], jawapan: "E" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'D'?", pilihan: ["F", "C", "Y", "S"], jawapan: "C" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'E'?", pilihan: ["F", "X", "H", "L"], jawapan: "F" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'E'?", pilihan: ["B", "D", "J", "C"], jawapan: "D" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'F'?", pilihan: ["G", "Z", "L", "A"], jawapan: "G" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'F'?", pilihan: ["G", "E", "Y", "P"], jawapan: "E" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'G'?", pilihan: ["X", "H", "C", "D"], jawapan: "H" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'G'?", pilihan: ["T", "F", "S", "M"], jawapan: "F" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'H'?", pilihan: ["K", "M", "B", "I"], jawapan: "I" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'H'?", pilihan: ["G", "W", "D", "I"], jawapan: "G" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'I'?", pilihan: ["E", "Y", "J", "U"], jawapan: "J" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'I'?", pilihan: ["F", "H", "O", "A"], jawapan: "H" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'J'?", pilihan: ["F", "X", "I", "K"], jawapan: "K" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'J'?", pilihan: ["I", "H", "Q", "G"], jawapan: "I" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'K'?", pilihan: ["L", "A", "W", "H"], jawapan: "L" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'K'?", pilihan: ["J", "Z", "I", "C"], jawapan: "J" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'L'?", pilihan: ["S", "W", "K", "M"], jawapan: "M" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'L'?", pilihan: ["T", "F", "I", "K"], jawapan: "K" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'M'?", pilihan: ["L", "N", "Y", "K"], jawapan: "N" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'M'?", pilihan: ["G", "N", "L", "T"], jawapan: "L" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'N'?", pilihan: ["O", "R", "S", "A"], jawapan: "O" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'N'?", pilihan: ["C", "M", "K", "W"], jawapan: "M" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'O'?", pilihan: ["P", "Y", "R", "J"], jawapan: "P" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'O'?", pilihan: ["K", "N", "X", "M"], jawapan: "N" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'P'?", pilihan: ["G", "Q", "N", "W"], jawapan: "Q" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'P'?", pilihan: ["U", "O", "T", "J"], jawapan: "O" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'Q'?", pilihan: ["R", "N", "J", "G"], jawapan: "R" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'Q'?", pilihan: ["O", "P", "W", "G"], jawapan: "P" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'R'?", pilihan: ["W", "J", "S", "C"], jawapan: "S" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'R'?", pilihan: ["H", "J", "Q", "W"], jawapan: "Q" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'S'?", pilihan: ["P", "H", "B", "T"], jawapan: "T" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'S'?", pilihan: ["R", "T", "V", "G"], jawapan: "R" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'T'?", pilihan: ["E", "H", "V", "U"], jawapan: "U" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'T'?", pilihan: ["H", "F", "S", "X"], jawapan: "S" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'U'?", pilihan: ["V", "D", "O", "E"], jawapan: "V" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'U'?", pilihan: ["T", "Z", "O", "U"], jawapan: "T" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'V'?", pilihan: ["Y", "W", "F", "P"], jawapan: "W" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'V'?", pilihan: ["V", "U", "I", "Z"], jawapan: "U" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'W'?", pilihan: ["C", "I", "X", "O"], jawapan: "X" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'W'?", pilihan: ["C", "R", "V", "K"], jawapan: "V" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'X'?", pilihan: ["W", "E", "Y", "M"], jawapan: "Y" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'X'?", pilihan: ["K", "W", "N", "R"], jawapan: "W" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang selepas 'Y'?", pilihan: ["M", "G", "N", "Z"], jawapan: "Z" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'Y'?", pilihan: ["X", "L", "P", "A"], jawapan: "X" },
+                    { jenis: "objektif", soalan: "Huruf manakah datang sebelum 'Z'?", pilihan: ["X", "Y", "T", "R"], jawapan: "Y" }
                 ]},
                 { nama: "Suku Kata KV (KVKV)", emoji: "🗣️", soalan: [
-                    { jenis: "objektif", soalan: "Lengkapkan perkataan: BA + ___ = Baju", pilihan: ["ju", "ru", "tu", "ku"], jawapan: "ju" },
                     { jenis: "objektif", soalan: "Bunyi bagi gambar 🏠 adalah...", pilihan: ["ru-mah", "bu-ku", "bo-la", "ci-li"], jawapan: "ru-mah" },
-                    { jenis: "isi_tempat_kosong", soalan: "___ + LI = CILI", pilihan: ["CI", "BI", "DI", "MI"], jawapan: "CI" }
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "ubi",  label: "Ubi",  a: "u",  b: "bi" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "dua",  label: "Dua",  a: "du", b: "a" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "dada", label: "Dada", a: "da", b: "da" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "dadu", label: "Dadu", a: "da", b: "du" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini! (Bucu = penjuru tajam!)", gambarKey: "bucu", label: "Bucu", a: "bu", b: "cu", sharp: true },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "baju", label: "Baju", a: "ba", b: "ju" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "dahi", label: "Dahi", a: "da", b: "hi" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "gigi", label: "Gigi", a: "gi", b: "gi" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "dagu", label: "Dagu", a: "da", b: "gu" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "biji", label: "Biji", a: "bi", b: "ji" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "batu", label: "Batu", a: "ba", b: "tu" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "buku", label: "Buku", a: "bu", b: "ku" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "cacing", label: "Cacing", a: "ca", b: "cing" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "cili", label: "Cili", a: "ci", b: "li" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "cuci", label: "Cuci", a: "cu", b: "ci" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "duri", label: "Duri", a: "du", b: "ri" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "gula", label: "Gula", a: "gu", b: "la" },
+                    { jenis: "padan_suku_kata", soalan: "Padankan suku kata untuk bentuk perkataan ini!", gambarKey: "gajah", label: "Gajah", a: "ga", b: "jah" },
+                    { jenis: "cari_sama", soalan: "Cari belon suku kata yang SAMA dengan sasaran!", target: "bi", pilihan: ["ba", "bi", "bu", "cu"], jawapan: "bi" },
+                    { jenis: "cari_sama", soalan: "Cari belon suku kata yang SAMA dengan sasaran!", target: "cu", pilihan: ["ca", "cu", "ci", "du"], jawapan: "cu" },
+                    { jenis: "cari_sama", soalan: "Cari belon suku kata yang SAMA dengan sasaran!", target: "da", pilihan: ["di", "da", "du", "ga"], jawapan: "da" },
+                    { jenis: "cari_berlainan", soalan: "Cari SATU suku kata yang BERLAINAN daripada yang lain!", pilihan: ["ca", "ca", "ba", "ca"], jawapan: "ba" },
+                    { jenis: "cari_berlainan", soalan: "Cari SATU suku kata yang BERLAINAN daripada yang lain!", pilihan: ["du", "du", "du", "bi"], jawapan: "bi" },
+                    { jenis: "cari_berlainan", soalan: "Cari SATU suku kata yang BERLAINAN daripada yang lain!", pilihan: ["bu", "bu", "bu", "bi"], jawapan: "bi" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis suku kata 'ba'", target: "ba" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis suku kata 'da'", target: "da" },
+                    { jenis: "cari_perkataan", soalan: "Cari dan padankan 4 perkataan tersembunyi dalam petak!",
+                        grid: [["da","ba","ca","bi"],["bu","bi","du","da"],["cu","ba","ci","ca"],["bi","ci","bu","di"]],
+                        words: [
+                            { word: "baca", cells: [[0,1],[0,2]] },
+                            { word: "duda", cells: [[1,2],[1,3]] },
+                            { word: "cuba", cells: [[2,0],[2,1]] },
+                            { word: "budi", cells: [[3,2],[3,3]] }
+                        ]
+                    },
+                    { jenis: "cari_perkataan", soalan: "Cari dan padankan 4 perkataan tersembunyi dalam petak!",
+                        grid: [["gu","hi","ja","ga"],["ga","ji","hu","gi"],["hi","ha","ba","ja"],["gi","ju","hi","du"]],
+                        words: [
+                            { word: "jaga", cells: [[0,2],[0,3]] },
+                            { word: "gaji", cells: [[1,0],[1,1]] },
+                            { word: "haba", cells: [[2,1],[2,2]] },
+                            { word: "hidu", cells: [[3,2],[3,3]] }
+                        ]
+                    },
+                    { jenis: "cari_perkataan", soalan: "Cari dan padankan 4 perkataan tersembunyi dalam petak!",
+                        grid: [["ka","ki","ta","li"],["ku","da","ma","sa"],["ra","ya","wa","fa"],["na","pa","ga","ba"]],
+                        words: [
+                            { word: "kaki", cells: [[0,0],[0,1]] },
+                            { word: "tali", cells: [[0,2],[0,3]] },
+                            { word: "kuda", cells: [[1,0],[1,1]] },
+                            { word: "masa", cells: [[1,2],[1,3]] }
+                        ]
+                    },
+                    { jenis: "cari_perkataan", soalan: "Cari dan padankan 4 perkataan tersembunyi dalam petak!",
+                        grid: [["su","su","bo","la"],["ro","da","to","pi"],["ma","ki","wa","ya"],["fa","na","ga","ha"]],
+                        words: [
+                            { word: "susu", cells: [[0,0],[0,1]] },
+                            { word: "bola", cells: [[0,2],[0,3]] },
+                            { word: "roda", cells: [[1,0],[1,1]] },
+                            { word: "topi", cells: [[1,2],[1,3]] }
+                        ]
+                    },
+                    { jenis: "cari_perkataan", soalan: "Cari dan padankan 4 perkataan tersembunyi dalam petak!",
+                        grid: [["na","si","la","gu"],["ba","tu","ku","ku"],["ma","ki","ra","ya"],["wa","fa","ga","ha"]],
+                        words: [
+                            { word: "nasi", cells: [[0,0],[0,1]] },
+                            { word: "lagu", cells: [[0,2],[0,3]] },
+                            { word: "batu", cells: [[1,0],[1,1]] },
+                            { word: "kuku", cells: [[1,2],[1,3]] }
+                        ]
+                    },
+                    { jenis: "cari_perkataan", soalan: "Cari dan padankan 4 perkataan tersembunyi dalam petak!",
+                        grid: [["ka","ca","gu","la"],["pe","ta","pi","pi"],["ma","ki","ra","ya"],["wa","fa","na","ha"]],
+                        words: [
+                            { word: "kaca", cells: [[0,0],[0,1]] },
+                            { word: "gula", cells: [[0,2],[0,3]] },
+                            { word: "peta", cells: [[1,0],[1,1]] },
+                            { word: "pipi", cells: [[1,2],[1,3]] }
+                        ]
+                    }
                 ]},
                 { nama: "Membaca Perkataan & Ayat", emoji: "📖", soalan: [
-                    { jenis: "objektif", soalan: "Susun perkataan ini supaya betul: 'suka / saya / buku'", pilihan: ["saya suka buku", "buku saya suka", "suka saya buku"], jawapan: "saya suka buku" }
+                    { jenis: "objektif", soalan: "Susun perkataan ini supaya betul: 'suka / saya / buku'", pilihan: ["saya suka buku", "buku saya suka", "suka saya buku"], jawapan: "saya suka buku" },
+                    { jenis: "objektif", soalan: "Susun perkataan ini supaya betul: 'ke / saya / sekolah / pergi'", pilihan: ["saya pergi ke sekolah", "sekolah saya pergi ke", "pergi ke saya sekolah"], jawapan: "saya pergi ke sekolah" },
+                    { jenis: "objektif", soalan: "Susun perkataan ini supaya betul: 'makan / ibu / nasi'", pilihan: ["ibu makan nasi", "nasi ibu makan", "makan nasi ibu"], jawapan: "ibu makan nasi" },
+                    { jenis: "objektif", soalan: "Susun perkataan ini supaya betul: 'kucing / itu / comel'", pilihan: ["kucing itu comel", "comel itu kucing", "itu kucing comel"], jawapan: "kucing itu comel" },
+                    { jenis: "objektif", soalan: "Pilih perkataan yang bermaksud gambar 🐟", pilihan: ["ikan", "ayam", "itik", "udang"], jawapan: "ikan" },
+                    { jenis: "objektif", soalan: "Pilih perkataan yang bermaksud gambar 🌳", pilihan: ["pokok", "bunga", "rumput", "daun"], jawapan: "pokok" },
+                    { jenis: "objektif", soalan: "Pilih perkataan yang bermaksud gambar ☀️", pilihan: ["matahari", "bulan", "bintang", "awan"], jawapan: "matahari" },
+                    { jenis: "objektif", soalan: "Pilih perkataan yang bermaksud gambar 🏠", pilihan: ["rumah", "sekolah", "kedai", "taman"], jawapan: "rumah" },
+                    { jenis: "objektif", soalan: "Lengkapkan ayat: 'Ali sedang ___ bola.'", pilihan: ["bermain", "berlari", "makan", "tidur"], jawapan: "bermain" },
+                    { jenis: "objektif", soalan: "Lengkapkan ayat: 'Saya minum ___ setiap pagi.'", pilihan: ["susu", "kerusi", "buku", "kasut"], jawapan: "susu" },
+                    { jenis: "objektif", soalan: "Manakah ayat yang BETUL?", pilihan: ["Adik sedang tidur", "Tidur adik sedang", "Sedang tidur adik"], jawapan: "Adik sedang tidur" },
+                    { jenis: "objektif", soalan: "Manakah ayat yang BETUL?", pilihan: ["Kami bermain di taman", "Taman kami di bermain", "Di kami taman bermain"], jawapan: "Kami bermain di taman" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis perkataan 'saya'", target: "saya" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis perkataan 'buku'", target: "buku" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk menulis perkataan 'ibu'", target: "ibu" }
                 ]}
             ],
             "English": [
                 { nama: "Alphabet & Phonics", emoji: "🔤", soalan: [
                     { jenis: "objektif", soalan: "What is the beginning sound of '🍎 Apple'?", pilihan: ["A", "B", "C", "D"], jawapan: "A" },
-                    { jenis: "objektif", soalan: "Which animal starts with the letter 'D'?", pilihan: ["🐈 Cat", "🐕 Dog", "🦁 Lion", "🐮 Cow"], jawapan: "🐕 Dog" }
+                    { jenis: "objektif", soalan: "Which animal starts with the letter 'D'?", pilihan: ["🐈 Cat", "🐕 Dog", "🦁 Lion", "🐮 Cow"], jawapan: "🐕 Dog" },
+                    { jenis: "objektif", soalan: "What is the beginning sound of '🐝 Bee'?", pilihan: ["A", "B", "C", "D"], jawapan: "B" },
+                    { jenis: "objektif", soalan: "What is the beginning sound of '🐱 Cat'?", pilihan: ["A", "B", "C", "D"], jawapan: "C" },
+                    { jenis: "objektif", soalan: "What is the beginning sound of '🐘 Elephant'?", pilihan: ["D", "E", "F", "G"], jawapan: "E" },
+                    { jenis: "objektif", soalan: "What is the beginning sound of '🐸 Frog'?", pilihan: ["D", "E", "F", "G"], jawapan: "F" },
+                    { jenis: "objektif", soalan: "Which animal starts with the letter 'G'?", pilihan: ["🦒 Giraffe", "🐴 Horse", "🐦 Bird", "🐟 Fish"], jawapan: "🦒 Giraffe" },
+                    { jenis: "objektif", soalan: "Which animal starts with the letter 'H'?", pilihan: ["🐴 Horse", "🐕 Dog", "🐱 Cat", "🐟 Fish"], jawapan: "🐴 Horse" },
+                    { jenis: "objektif", soalan: "What letter comes after 'M'?", pilihan: ["L", "N", "O", "K"], jawapan: "N" },
+                    { jenis: "objektif", soalan: "What letter comes before 'S'?", pilihan: ["R", "T", "Q", "U"], jawapan: "R" },
+                    { jenis: "tracing", soalan: "Trace the letter 'A'", target: "A" },
+                    { jenis: "tracing", soalan: "Trace the letter 'B'", target: "B" },
+                    { jenis: "tracing", soalan: "Trace the letter 'C'", target: "C" },
+                    { jenis: "tracing", soalan: "Trace the letter 'D'", target: "D" }
                 ]},
                 { nama: "Vocabulary & Animals", emoji: "🦁", soalan: [
-                    { jenis: "objektif", soalan: "Identify this fruit: 🍌", pilihan: ["Banana", "Apple", "Orange", "Grape"], jawapan: "Banana" }
+                    { jenis: "objektif", soalan: "Identify this fruit: 🍌", pilihan: ["Banana", "Apple", "Orange", "Grape"], jawapan: "Banana" },
+                    { jenis: "objektif", soalan: "Identify this fruit: 🍎", pilihan: ["Apple", "Banana", "Mango", "Pear"], jawapan: "Apple" },
+                    { jenis: "objektif", soalan: "Identify this fruit: 🍊", pilihan: ["Orange", "Apple", "Banana", "Grape"], jawapan: "Orange" },
+                    { jenis: "objektif", soalan: "Identify this animal: 🦁", pilihan: ["Lion", "Tiger", "Bear", "Wolf"], jawapan: "Lion" },
+                    { jenis: "objektif", soalan: "Identify this animal: 🐘", pilihan: ["Elephant", "Hippo", "Rhino", "Bear"], jawapan: "Elephant" },
+                    { jenis: "objektif", soalan: "Identify this animal: 🐒", pilihan: ["Monkey", "Bear", "Dog", "Cat"], jawapan: "Monkey" },
+                    { jenis: "objektif", soalan: "Identify this animal: 🦒", pilihan: ["Giraffe", "Horse", "Zebra", "Camel"], jawapan: "Giraffe" },
+                    { jenis: "objektif", soalan: "What colour is this? 🔴", pilihan: ["Red", "Blue", "Green", "Yellow"], jawapan: "Red" },
+                    { jenis: "objektif", soalan: "What colour is this? 🔵", pilihan: ["Blue", "Red", "Green", "Yellow"], jawapan: "Blue" },
+                    { jenis: "objektif", soalan: "What colour is this? 🟡", pilihan: ["Yellow", "Blue", "Red", "Green"], jawapan: "Yellow" },
+                    { jenis: "objektif", soalan: "Identify this object: 🚗", pilihan: ["Car", "Bus", "Bike", "Train"], jawapan: "Car" },
+                    { jenis: "objektif", soalan: "Identify this object: ✈️", pilihan: ["Airplane", "Car", "Boat", "Train"], jawapan: "Airplane" },
+                    { jenis: "objektif", soalan: "Identify this shape: 🔺", pilihan: ["Triangle", "Circle", "Square", "Star"], jawapan: "Triangle" },
+                    { jenis: "objektif", soalan: "Identify this shape: ⭐", pilihan: ["Star", "Circle", "Square", "Triangle"], jawapan: "Star" }
                 ]}
             ],
             "Matematik": [
                 { nama: "Membilang Nombor (Counting)", emoji: "🧮", soalan: [
                     { jenis: "objektif", soalan: "Kira jumlah buah epal ini: 🍎 🍎 🍎", pilihan: ["2", "3", "4", "5"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "Kira jumlah bintang ini: ⭐ ⭐", pilihan: ["1", "2", "3", "4"], jawapan: "2" },
+                    { jenis: "objektif", soalan: "Kira jumlah bola ini: ⚽ ⚽ ⚽ ⚽", pilihan: ["3", "4", "5", "6"], jawapan: "4" },
+                    { jenis: "objektif", soalan: "Kira jumlah bunga ini: 🌸 🌸 🌸 🌸 🌸", pilihan: ["4", "5", "6", "7"], jawapan: "5" },
+                    { jenis: "objektif", soalan: "Kira jumlah ikan ini: 🐟 🐟 🐟 🐟 🐟 🐟", pilihan: ["5", "6", "7", "8"], jawapan: "6" },
                     { jenis: "pilih_gambar", soalan: "Kumpulan mana yang mempunyai LEBIH BANYAK?", pilihan: ["🍎 🍎", "🍎 🍎 🍎 🍎"], jawapan: "🍎 🍎 🍎 🍎" },
-                    { jenis: "tracing", soalan: "Ikut garisan untuk melukis angka '3'", target: "3" }
+                    { jenis: "pilih_gambar", soalan: "Kumpulan mana yang mempunyai KURANG?", pilihan: ["⭐ ⭐ ⭐ ⭐ ⭐", "⭐ ⭐"], jawapan: "⭐ ⭐" },
+                    { jenis: "objektif", soalan: "Nombor manakah selepas 5?", pilihan: ["4", "6", "7", "3"], jawapan: "6" },
+                    { jenis: "objektif", soalan: "Nombor manakah sebelum 8?", pilihan: ["7", "9", "6", "10"], jawapan: "7" },
+                    { jenis: "objektif", soalan: "Nombor manakah selepas 9?", pilihan: ["8", "10", "11", "7"], jawapan: "10" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk melukis angka '1'", target: "1" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk melukis angka '2'", target: "2" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk melukis angka '3'", target: "3" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk melukis angka '4'", target: "4" },
+                    { jenis: "tracing", soalan: "Ikut garisan untuk melukis angka '5'", target: "5" }
                 ]},
                 { nama: "Operasi Tambah & Tolak", emoji: "➕", soalan: [
                     { jenis: "objektif", soalan: "Berapakah 2 + 3?", pilihan: ["4", "5", "6", "7"], jawapan: "5" },
-                    { jenis: "objektif", soalan: "Berapakah 5 - 2?", pilihan: ["2", "3", "4", "1"], jawapan: "3" }
-                ]}
+                    { jenis: "objektif", soalan: "Berapakah 5 - 2?", pilihan: ["2", "3", "4", "1"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "Berapakah 1 + 4?", pilihan: ["4", "5", "6", "3"], jawapan: "5" },
+                    { jenis: "objektif", soalan: "Berapakah 3 + 3?", pilihan: ["5", "6", "7", "4"], jawapan: "6" },
+                    { jenis: "objektif", soalan: "Berapakah 4 + 4?", pilihan: ["6", "7", "8", "9"], jawapan: "8" },
+                    { jenis: "objektif", soalan: "Berapakah 6 - 3?", pilihan: ["2", "3", "4", "1"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "Berapakah 7 - 4?", pilihan: ["2", "3", "4", "5"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "Berapakah 8 - 5?", pilihan: ["2", "3", "4", "5"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "Berapakah 9 - 6?", pilihan: ["2", "3", "4", "5"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "Berapakah 2 + 2?", pilihan: ["3", "4", "5", "6"], jawapan: "4" },
+                    { jenis: "objektif", soalan: "Berapakah 10 - 5?", pilihan: ["4", "5", "6", "3"], jawapan: "5" },
+                    { jenis: "objektif", soalan: "Berapakah 6 + 2?", pilihan: ["7", "8", "9", "6"], jawapan: "8" }
+                ]},
+                { nama: "Darab (Multiplication)", emoji: "\u2716\ufe0f", soalan: [
+                    { jenis: "objektif", soalan: "Berapakah 2 \u00d7 1?", pilihan: ["1", "3", "7", "2"], jawapan: "2" },
+                    { jenis: "objektif", soalan: "Berapakah 2 \u00d7 2?", pilihan: ["7", "3", "4", "8"], jawapan: "4" },
+                    { jenis: "objektif", soalan: "Berapakah 2 \u00d7 3?", pilihan: ["7", "1", "3", "6"], jawapan: "6" },
+                    { jenis: "objektif", soalan: "Berapakah 2 \u00d7 4?", pilihan: ["12", "8", "3", "2"], jawapan: "8" },
+                    { jenis: "objektif", soalan: "Berapakah 2 \u00d7 5?", pilihan: ["14", "4", "10", "11"], jawapan: "10" },
+                    { jenis: "objektif", soalan: "Berapakah 3 \u00d7 1?", pilihan: ["6", "1", "4", "3"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "Berapakah 3 \u00d7 2?", pilihan: ["9", "11", "2", "6"], jawapan: "6" },
+                    { jenis: "objektif", soalan: "Berapakah 3 \u00d7 3?", pilihan: ["8", "12", "4", "9"], jawapan: "9" },
+                    { jenis: "objektif", soalan: "Berapakah 3 \u00d7 4?", pilihan: ["12", "9", "16", "14"], jawapan: "12" },
+                    { jenis: "objektif", soalan: "Berapakah 3 \u00d7 5?", pilihan: ["17", "14", "15", "19"], jawapan: "15" },
+                    { jenis: "objektif", soalan: "Berapakah 4 \u00d7 1?", pilihan: ["4", "8", "10", "1"], jawapan: "4" },
+                    { jenis: "objektif", soalan: "Berapakah 4 \u00d7 2?", pilihan: ["10", "8", "7", "14"], jawapan: "8" },
+                    { jenis: "objektif", soalan: "Berapakah 4 \u00d7 3?", pilihan: ["13", "12", "7", "15"], jawapan: "12" },
+                    { jenis: "objektif", soalan: "Berapakah 4 \u00d7 4?", pilihan: ["10", "17", "18", "16"], jawapan: "16" },
+                    { jenis: "objektif", soalan: "Berapakah 4 \u00d7 5?", pilihan: ["20", "24", "26", "19"], jawapan: "20" },
+                    { jenis: "objektif", soalan: "Berapakah 5 \u00d7 1?", pilihan: ["3", "0", "7", "5"], jawapan: "5" },
+                    { jenis: "objektif", soalan: "Berapakah 5 \u00d7 2?", pilihan: ["10", "12", "15", "14"], jawapan: "10" },
+                    { jenis: "objektif", soalan: "Berapakah 5 \u00d7 3?", pilihan: ["20", "15", "9", "14"], jawapan: "15" },
+                    { jenis: "objektif", soalan: "Berapakah 5 \u00d7 4?", pilihan: ["22", "24", "15", "20"], jawapan: "20" },
+                    { jenis: "objektif", soalan: "Berapakah 5 \u00d7 5?", pilihan: ["25", "22", "21", "31"], jawapan: "25" },
+                    { jenis: "objektif", soalan: "Ada 2 kumpulan, setiap kumpulan 3 biji: 🍎🍎🍎 | 🍎🍎🍎. Jumlah semua?", pilihan: ["6", "8", "1", "2"], jawapan: "6" },
+                    { jenis: "objektif", soalan: "Ada 3 kumpulan, setiap kumpulan 2 biji: ⭐⭐ | ⭐⭐ | ⭐⭐. Jumlah semua?", pilihan: ["6", "9", "7", "2"], jawapan: "6" },
+                    { jenis: "objektif", soalan: "Ada 2 kumpulan, setiap kumpulan 4 biji: 🍊🍊🍊🍊 | 🍊🍊🍊🍊. Jumlah semua?", pilihan: ["7", "13", "8", "9"], jawapan: "8" },
+                    { jenis: "objektif", soalan: "Ada 4 kumpulan, setiap kumpulan 2 biji: 🎈🎈 | 🎈🎈 | 🎈🎈 | 🎈🎈. Jumlah semua?", pilihan: ["4", "5", "8", "13"], jawapan: "8" },
+                    { jenis: "objektif", soalan: "Ada 3 kumpulan, setiap kumpulan 3 biji: 🐟🐟🐟 | 🐟🐟🐟 | 🐟🐟🐟. Jumlah semua?", pilihan: ["5", "7", "9", "13"], jawapan: "9" }
+                ]},
+                { nama: "Bahagi (Division)", emoji: "\u2797", soalan: [
+                    { jenis: "objektif", soalan: "Berapakah 2 \u00f7 2?", pilihan: ["0", "4", "1", "2"], jawapan: "1" },
+                    { jenis: "objektif", soalan: "Berapakah 4 \u00f7 2?", pilihan: ["2", "4", "3", "5"], jawapan: "2" },
+                    { jenis: "objektif", soalan: "Berapakah 6 \u00f7 2?", pilihan: ["0", "5", "3", "6"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "Berapakah 8 \u00f7 2?", pilihan: ["1", "6", "0", "4"], jawapan: "4" },
+                    { jenis: "objektif", soalan: "Berapakah 10 \u00f7 2?", pilihan: ["9", "5", "2", "1"], jawapan: "5" },
+                    { jenis: "objektif", soalan: "Berapakah 3 \u00f7 3?", pilihan: ["1", "5", "2", "0"], jawapan: "1" },
+                    { jenis: "objektif", soalan: "Berapakah 6 \u00f7 3?", pilihan: ["4", "1", "6", "2"], jawapan: "2" },
+                    { jenis: "objektif", soalan: "Berapakah 9 \u00f7 3?", pilihan: ["1", "5", "3", "0"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "Berapakah 12 \u00f7 3?", pilihan: ["6", "4", "2", "8"], jawapan: "4" },
+                    { jenis: "objektif", soalan: "Berapakah 15 \u00f7 3?", pilihan: ["4", "5", "2", "8"], jawapan: "5" },
+                    { jenis: "objektif", soalan: "Berapakah 4 \u00f7 4?", pilihan: ["4", "1", "5", "0"], jawapan: "1" },
+                    { jenis: "objektif", soalan: "Berapakah 8 \u00f7 4?", pilihan: ["5", "6", "2", "1"], jawapan: "2" },
+                    { jenis: "objektif", soalan: "Berapakah 12 \u00f7 4?", pilihan: ["6", "3", "0", "7"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "Berapakah 16 \u00f7 4?", pilihan: ["6", "0", "4", "2"], jawapan: "4" },
+                    { jenis: "objektif", soalan: "Berapakah 20 \u00f7 4?", pilihan: ["9", "7", "5", "4"], jawapan: "5" },
+                    { jenis: "objektif", soalan: "Berapakah 5 \u00f7 5?", pilihan: ["5", "3", "0", "1"], jawapan: "1" },
+                    { jenis: "objektif", soalan: "Berapakah 10 \u00f7 5?", pilihan: ["5", "2", "6", "3"], jawapan: "2" },
+                    { jenis: "objektif", soalan: "Berapakah 15 \u00f7 5?", pilihan: ["6", "2", "4", "3"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "Berapakah 20 \u00f7 5?", pilihan: ["8", "6", "5", "4"], jawapan: "4" },
+                    { jenis: "objektif", soalan: "Berapakah 25 \u00f7 5?", pilihan: ["5", "7", "9", "1"], jawapan: "5" },
+                    { jenis: "objektif", soalan: "🍪🍪🍪🍪🍪🍪 dibahagi sama rata kepada 2 kawan. Setiap kawan dapat berapa?", pilihan: ["6", "5", "3", "2"], jawapan: "3" },
+                    { jenis: "objektif", soalan: "🍬🍬🍬🍬🍬🍬🍬🍬 dibahagi sama rata kepada 4 kawan. Setiap kawan dapat berapa?", pilihan: ["4", "2", "5", "0"], jawapan: "2" },
+                    { jenis: "objektif", soalan: "🎈🎈🎈🎈🎈🎈🎈🎈 dibahagi sama rata kepada 2 kawan. Setiap kawan dapat berapa?", pilihan: ["4", "7", "2", "1"], jawapan: "4" },
+                    { jenis: "objektif", soalan: "🍓🍓🍓🍓🍓🍓🍓🍓🍓 dibahagi sama rata kepada 3 kawan. Setiap kawan dapat berapa?", pilihan: ["4", "6", "3", "1"], jawapan: "3" }
+                ]},
+                { nama: "Hafalan Sifir (Times Table)", emoji: "\ud83e\udde0", soalan: [] }
             ]
         };
 
-        // State Profil Tempatan Lalai
+        // --------------------------------------------------
+        // PUSTAKA GAMBAR SVG UNTUK JENIS SOALAN "padan_suku_kata"
+        // (Disimpan sebagai kunci rentetan dalam data supaya boleh di-clone selamat
+        //  guna JSON.parse/stringify di dalam mulaMisiGame - fungsi TIDAK disimpan terus)
+        // --------------------------------------------------
+        function svgFaceBase(){ return `<circle cx="100" cy="105" r="70" fill="#F3C29B"/><circle cx="78" cy="95" r="7" fill="#33324A"/><circle cx="122" cy="95" r="7" fill="#33324A"/><path d="M80 130 Q100 148 120 130" stroke="#33324A" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="65" cy="115" r="9" fill="#F79EB8" opacity="0.55"/><circle cx="135" cy="115" r="9" fill="#F79EB8" opacity="0.55"/>`; }
+        const SVG_LIBRARY = {
+            ubi: () => `<svg viewBox="0 0 200 200"><ellipse cx="100" cy="115" rx="62" ry="42" fill="#C68B59"/><ellipse cx="80" cy="100" rx="46" ry="30" fill="#D9A06B"/><ellipse cx="70" cy="92" rx="18" ry="10" fill="#EFC79B" opacity="0.8"/><path d="M100 73 q6 -18 22 -20" stroke="#7A9E5D" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M108 73 q-2 -14 10 -22" stroke="#8FBF6E" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="60" cy="120" r="3" fill="#8A5C36"/><circle cx="120" cy="130" r="3" fill="#8A5C36"/><circle cx="95" cy="140" r="3" fill="#8A5C36"/></svg>`,
+            dua: () => `<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" fill="#FFE59A"/><text x="100" y="140" font-family="Fredoka, sans-serif" font-weight="800" font-size="130" text-anchor="middle" fill="#F08A5D">2</text><circle cx="45" cy="45" r="8" fill="#F79EB8"/><circle cx="155" cy="45" r="8" fill="#7FC7EE"/></svg>`,
+            dada: () => `<svg viewBox="0 0 200 200"><circle cx="100" cy="46" r="26" fill="#F3C29B"/><path d="M45 175 Q45 95 100 95 Q155 95 155 175 Z" fill="#7FC7EE"/><path d="M100 118 c-14 -16 -42 -2 -30 20 c8 15 30 28 30 28 c0 0 22 -13 30 -28 c12 -22 -16 -36 -30 -20 Z" fill="#F79EB8"/></svg>`,
+            dadu: () => `<svg viewBox="0 0 200 200"><rect x="38" y="38" width="124" height="124" rx="22" fill="#FFFDF8" stroke="#E3D1FF" stroke-width="6"/><circle cx="72" cy="72" r="10" fill="#63627A"/><circle cx="128" cy="72" r="10" fill="#63627A"/><circle cx="72" cy="128" r="10" fill="#63627A"/><circle cx="128" cy="128" r="10" fill="#63627A"/><circle cx="100" cy="100" r="10" fill="#63627A"/></svg>`,
+            bucu: () => `<svg viewBox="0 0 200 200"><rect x="34" y="50" width="132" height="100" rx="30" fill="#BFF3D6" stroke="#8FE0B6" stroke-width="4"/><path d="M34 80 Q60 100 34 120" stroke="#8FE0B6" stroke-width="4" fill="none"/><path d="M166 80 Q140 100 166 120" stroke="#8FE0B6" stroke-width="4" fill="none"/><line x1="122" y1="30" x2="156" y2="52" stroke="#FF0000" stroke-width="6" stroke-linecap="round"/><polygon points="156,52 141,49 150,63" fill="#FF0000"/></svg>`,
+            baju: () => `<svg viewBox="0 0 200 200"><path d="M70 40 L100 55 L130 40 L165 65 L150 90 L138 82 L138 165 L62 165 L62 82 L50 90 L35 65 Z" fill="#AEE1F9" stroke="#7FC7EE" stroke-width="4" stroke-linejoin="round"/><circle cx="100" cy="70" r="5" fill="#7FC7EE"/></svg>`,
+            dahi: () => `<svg viewBox="0 0 200 200">${svgFaceBase()}<line x1="100" y1="14" x2="100" y2="42" stroke="#FF0000" stroke-width="6" stroke-linecap="round"/><polygon points="100,42 90,28 110,28" fill="#FF0000"/></svg>`,
+            gigi: () => `<svg viewBox="0 0 200 200"><ellipse cx="100" cy="105" rx="78" ry="55" fill="#F28FAB"/><path d="M35 100 Q100 60 165 100 Q165 100 165 108 L35 108 Z" fill="#FFFDF8"/><path d="M35 100 Q100 60 165 100" stroke="#D9718E" stroke-width="3" fill="none"/><line x1="65" y1="98" x2="65" y2="108" stroke="#E7DCD8" stroke-width="2"/><line x1="95" y1="94" x2="95" y2="108" stroke="#E7DCD8" stroke-width="2"/><line x1="125" y1="94" x2="125" y2="108" stroke="#E7DCD8" stroke-width="2"/><line x1="150" y1="98" x2="150" y2="108" stroke="#E7DCD8" stroke-width="2"/><path d="M35 150 Q100 175 165 150" stroke="#C9607A" stroke-width="10" fill="none" stroke-linecap="round"/></svg>`,
+            dagu: () => `<svg viewBox="0 0 200 200">${svgFaceBase()}<line x1="100" y1="196" x2="100" y2="168" stroke="#FF0000" stroke-width="6" stroke-linecap="round"/><polygon points="100,168 90,182 110,182" fill="#FF0000"/></svg>`,
+            biji: () => `<svg viewBox="0 0 200 200"><path d="M100 20 C150 20 168 70 158 115 C148 165 130 185 100 185 C70 185 52 165 42 115 C32 70 50 20 100 20 Z" fill="#8FBF6E"/><path d="M100 34 C142 34 156 74 148 112 C140 154 124 172 100 172 C76 172 60 154 52 112 C44 74 58 34 100 34 Z" fill="#DDEB9E"/><circle cx="100" cy="112" r="34" fill="#A9702F"/><line x1="150" y1="60" x2="122" y2="92" stroke="#F08A5D" stroke-width="7" stroke-linecap="round"/><polygon points="122,92 126,78 136,90" fill="#F08A5D"/></svg>`,
+            batu: () => `<svg viewBox="0 0 200 200"><ellipse cx="100" cy="120" rx="70" ry="48" fill="#B9BFC6"/><ellipse cx="80" cy="105" rx="46" ry="28" fill="#CBD1D6"/><ellipse cx="65" cy="98" rx="16" ry="9" fill="#DEE3E6" opacity="0.8"/><circle cx="120" cy="130" r="5" fill="#9AA1A8"/><circle cx="90" cy="140" r="4" fill="#9AA1A8"/><circle cx="140" cy="110" r="3" fill="#9AA1A8"/><path d="M40 160 Q100 175 160 160 L160 168 Q100 182 40 168 Z" fill="#8FBF6E"/></svg>`,
+            buku: () => `<svg viewBox="0 0 200 200"><rect x="40" y="45" width="120" height="115" rx="8" fill="#FFC9D9" stroke="#F28FAB" stroke-width="4"/><line x1="100" y1="45" x2="100" y2="160" stroke="#F28FAB" stroke-width="4"/><line x1="55" y1="70" x2="90" y2="70" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/><line x1="55" y1="85" x2="90" y2="85" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/><line x1="110" y1="70" x2="145" y2="70" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/><line x1="110" y1="85" x2="145" y2="85" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/><rect x="150" y="40" width="14" height="40" fill="#F0BD3E"/></svg>`,
+            cacing: () => `<svg viewBox="0 0 200 200"><path d="M40 150 Q40 110 70 110 Q100 110 100 90 Q100 70 130 70 Q160 70 160 50" stroke="#F79EB8" stroke-width="26" fill="none" stroke-linecap="round"/><circle cx="45" cy="150" r="16" fill="#F5A9C0"/><circle cx="38" cy="145" r="3" fill="#33324A"/><circle cx="50" cy="145" r="3" fill="#33324A"/><path d="M38 156 Q45 161 52 156" stroke="#33324A" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
+            cili: () => `<svg viewBox="0 0 200 200"><path d="M120 40 Q100 55 105 75" stroke="#6FCB9A" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M100 70 C60 90 40 140 65 175 C90 200 145 175 150 130 C154 95 140 70 100 70 Z" fill="#E8412C"/><ellipse cx="90" cy="95" rx="14" ry="8" fill="#F3745F" opacity="0.7"/></svg>`,
+            cuci: () => `<svg viewBox="0 0 200 200"><path d="M35 120 Q100 105 165 120 L155 165 Q100 178 45 165 Z" fill="#AEE1F9" stroke="#5FAEE0" stroke-width="4"/><ellipse cx="100" cy="120" rx="65" ry="15" fill="#EAF6FF" stroke="#5FAEE0" stroke-width="3"/><circle cx="70" cy="115" r="6" fill="#ffffff" stroke="#5FAEE0" stroke-width="2"/><circle cx="95" cy="108" r="8" fill="#ffffff" stroke="#5FAEE0" stroke-width="2"/><circle cx="125" cy="112" r="5" fill="#ffffff" stroke="#5FAEE0" stroke-width="2"/><rect x="80" y="60" width="45" height="35" rx="6" fill="#FFC9D9" stroke="#F28FAB" stroke-width="3" transform="rotate(-8 100 78)"/></svg>`,
+            duri: () => `<svg viewBox="0 0 200 200"><line x1="100" y1="170" x2="100" y2="40" stroke="#6FCB9A" stroke-width="10" stroke-linecap="round"/><polygon points="100,60 130,50 100,80" fill="#3F9B6C"/><polygon points="100,90 70,80 100,110" fill="#3F9B6C"/><polygon points="100,120 130,112 100,142" fill="#3F9B6C"/><polygon points="100,150 70,142 100,170" fill="#3F9B6C"/></svg>`,
+            gula: () => `<svg viewBox="0 0 200 200"><path d="M45 110 Q100 95 155 110 L145 155 Q100 170 55 155 Z" fill="#AEE1F9" stroke="#5FAEE0" stroke-width="4"/><ellipse cx="100" cy="110" rx="55" ry="14" fill="#ffffff" stroke="#5FAEE0" stroke-width="3"/><rect x="75" y="90" width="10" height="10" rx="2" fill="#ffffff" stroke="#B9BFC6" stroke-width="1.5"/><rect x="92" y="82" width="10" height="10" rx="2" fill="#ffffff" stroke="#B9BFC6" stroke-width="1.5"/><rect x="110" y="90" width="10" height="10" rx="2" fill="#ffffff" stroke="#B9BFC6" stroke-width="1.5"/><path d="M120 70 l3 8 8 1 -6 6 2 8 -7 -4 -7 4 2 -8 -6 -6 8 -1 z" fill="#F0BD3E"/></svg>`,
+            gajah: () => `<svg viewBox="0 0 200 200"><ellipse cx="95" cy="115" rx="60" ry="50" fill="#B9BFC6"/><ellipse cx="45" cy="95" rx="26" ry="30" fill="#CBD1D6"/><path d="M60 130 Q45 175 60 190 Q75 190 70 165 Q68 145 60 130 Z" fill="#B9BFC6"/><circle cx="70" cy="100" r="6" fill="#33324A"/><path d="M150 95 Q168 100 165 118" stroke="#B9BFC6" stroke-width="14" fill="none" stroke-linecap="round"/><path d="M20 100 Q10 90 20 78" stroke="#9AA1A8" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
+        };
+
+        // Kumpulan suku kata untuk jana pilihan pengacau (distraktor) segar setiap kali soalan dipaparkan
+        const KUMPULAN_SUKU_A = ['u','du','da','bu','ba','gi','bi','ca','ci','cu','ga'];
+        const KUMPULAN_SUKU_B = ['bi','a','da','du','cu','ju','hi','gi','gu','ji','tu','ku','cing','li','ci','ri','la','jah'];
+
+        function janaPilihanSukuKata(betul, kumpulan, jumlah){
+            const lain = kumpulan.filter(v => v !== betul).sort(() => Math.random() - 0.5).slice(0, jumlah - 1);
+            return [betul, ...lain].sort(() => Math.random() - 0.5);
+        }
+
+        // --------------------------------------------------
+        // SISTEM SEBUTAN SUARA SUKU KATA (WEB SPEECH API)
+        // --------------------------------------------------
+        let suaraDihidupkan = true;
+        let suaraMSVoice = null;
+        function segarkanSenaraiSuara(){
+            if(!('speechSynthesis' in window)) return;
+            const semua = window.speechSynthesis.getVoices();
+            suaraMSVoice = semua.find(v => v.lang && v.lang.toLowerCase().startsWith('ms')) ||
+                           semua.find(v => v.lang && v.lang.toLowerCase().startsWith('id')) || null;
+        }
+        if('speechSynthesis' in window){
+            segarkanSenaraiSuara();
+            window.speechSynthesis.onvoiceschanged = segarkanSenaraiSuara;
+        }
+        function sebutSukuKata(teks){
+            if(!suaraDihidupkan || !('speechSynthesis' in window)) return;
+            try{
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(teks);
+                u.lang = 'ms-MY';
+                u.rate = 0.85;
+                u.pitch = 1.05;
+                if(suaraMSVoice) u.voice = suaraMSVoice;
+                window.speechSynthesis.speak(u);
+            }catch(e){}
+        }
+        function togolSuara(){
+            suaraDihidupkan = !suaraDihidupkan;
+            document.getElementById('btnTogolSuara').innerText = suaraDihidupkan ? '🔊' : '🔇';
+            if(!suaraDihidupkan && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+        }
+
+
         let profilKini = {
             namaAnak: "Pengembara Cilik",
             umur: 5,
@@ -529,7 +975,8 @@
             syiling: 0,
             aksesoriDibuka: ['t_cap', 'b_tshirt'], 
             pakaianSemasa: { topi: 't_cap', baju: 'b_tshirt', aksesori: '' },
-            misiSelesai: {} // Format: {"Dunia_Topik_Misi": true}
+            misiSelesai: {}, // Format: {"Dunia_Topik_Misi": true}
+            riwayatSoalan: {} // Format: {"Dunia|indexTopik": [indeks soalan yang telah digunakan]} - elak pengulangan
         };
 
         // State Enjin Game Semasa Berjalan
@@ -563,6 +1010,8 @@
             document.getElementById('skrinSetupProfil').classList.add('hidden');
             document.getElementById('skrinMenu').classList.add('hidden');
             document.getElementById('skrinTopik').classList.add('hidden');
+            document.getElementById('skrinPilihSifir').classList.add('hidden');
+            document.getElementById('skrinLatihanSifir').classList.add('hidden');
             document.getElementById('skrinGame').classList.add('hidden');
             document.getElementById('skrinAlmari').classList.add('hidden');
             document.getElementById('skrinIbubapa').classList.add('hidden');
@@ -581,20 +1030,90 @@
                 binaDashboardIbubapa();
             }
             
+            // Sediakan butang pilihan (umur/had masa/tahap) dengan nilai lalai bila skrin ini dibuka
+            if (idSkrin === 'skrinSetupProfil') {
+                sediakanUIsetupProfil();
+            }
+
             // Trigger rawak ucapan BARARA di menu utama
             if (idSkrin === 'skrinMenu') {
                 tukarDialogBarara();
             }
         }
 
+        // --------------------------------------------------
+        // SISTEM BUNYI KESAN (WEB AUDIO API - DIJANA SENDIRI, TIADA FAIL LUARAN)
+        // --------------------------------------------------
+        let audioCtxUtama;
+        function dapatkanAudioCtx() {
+            if (!audioCtxUtama) audioCtxUtama = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtxUtama.state === 'suspended') {
+                audioCtxUtama.resume().catch(() => {});
+            }
+            return audioCtxUtama;
+        }
+        // Sesetengah pelayar (dasar auto-play) mengekalkan AudioContext dalam keadaan
+        // "suspended" senyap sehingga ada interaksi pengguna secara langsung. Baris ini
+        // memastikan ia dibuka kunci seawal mungkin pada sentuhan/klik pertama.
+        ['click', 'touchstart', 'keydown'].forEach(evt => {
+            document.addEventListener(evt, function bukaKunciAudioPertamaKali() {
+                dapatkanAudioCtx();
+            }, { once: true, passive: true });
+        });
+        function nadaAudio(freq, mula, tempoh, jenis, puncakGain, penapisFreq) {
+            const ctx = dapatkanAudioCtx();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = jenis || 'sine';
+            osc.frequency.value = freq;
+            let nod = osc;
+            if (penapisFreq) {
+                const filt = ctx.createBiquadFilter();
+                filt.type = 'lowpass';
+                filt.frequency.value = penapisFreq;
+                osc.connect(filt);
+                nod = filt;
+            }
+            nod.connect(gain);
+            gain.connect(ctx.destination);
+            const t0 = ctx.currentTime + mula;
+            gain.gain.setValueAtTime(0, t0);
+            gain.gain.linearRampToValueAtTime(puncakGain || 0.18, t0 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, t0 + tempoh);
+            osc.start(t0);
+            osc.stop(t0 + tempoh + 0.02);
+        }
+        let bgmDimulakan = false;
+        let bgmIntervalId = null;
         function mainkanBunyi(idAudio) {
             try {
-                const aud = document.getElementById(idAudio);
-                if(aud) {
-                    aud.currentTime = 0;
-                    aud.play().catch(e => {});
+                if (idAudio === 'sndClick') {
+                    nadaAudio(700, 0, 0.06, 'square', 0.08);
+                } else if (idAudio === 'sndCorrect') {
+                    nadaAudio(523.25, 0, 0.14, 'triangle', 0.16);
+                    nadaAudio(659.25, 0.09, 0.14, 'triangle', 0.16);
+                    nadaAudio(783.99, 0.18, 0.22, 'triangle', 0.18);
+                } else if (idAudio === 'sndWrong') {
+                    nadaAudio(300, 0, 0.16, 'sine', 0.12);
+                    nadaAudio(230, 0.1, 0.22, 'sine', 0.10);
+                } else if (idAudio === 'sndWin') {
+                    nadaAudio(392.00, 0, 0.14, 'sawtooth', 0.16, 2200);
+                    nadaAudio(523.25, 0.10, 0.14, 'sawtooth', 0.17, 2400);
+                    nadaAudio(659.25, 0.20, 0.16, 'sawtooth', 0.18, 2600);
+                    nadaAudio(783.99, 0.32, 0.45, 'sawtooth', 0.20, 3000);
+                    nadaAudio(1046.50, 0.34, 0.40, 'triangle', 0.10, 3200);
+                } else if (idAudio === 'sndBgm') {
+                    if (bgmDimulakan) return;
+                    bgmDimulakan = true;
+                    // Muzik latar lembut dijana guna gelung nada lembut berulang (tiada fail luaran)
+                    const mainkanGelombangLembut = () => {
+                        nadaAudio(392.00, 0, 1.1, 'sine', 0.035);
+                        nadaAudio(493.88, 0.5, 1.1, 'sine', 0.03);
+                    };
+                    mainkanGelombangLembut();
+                    bgmIntervalId = setInterval(mainkanGelombangLembut, 4200);
                 }
-            } catch(e){}
+            } catch (e) {}
         }
 
         function tukarDialogBarara() {
@@ -677,11 +1196,61 @@
             });
         }
 
+        // --------------------------------------------------
+        // SKRIN SETUP PROFIL "KENALI PENGEMBARA CILIK" - PEMILIHAN BUTANG
+        // --------------------------------------------------
+        let pilihanSetupSementara = { umur: 5, hadMasa: 15, tahap: "Sederhana" };
+
+        const petunjukIkutUmur = {
+            4: "🌱 Soalan ringkas & pantas untuk umur 4 tahun (Tadika awal).",
+            5: "🌟 Soalan akan disesuaikan untuk umur 5 tahun.",
+            6: "🚀 Soalan sedikit mencabar untuk umur 6 tahun (Prasekolah).",
+            7: "🏆 Soalan lebih lanjutan untuk umur 7 tahun (Sekolah Rendah)."
+        };
+
+        function tandaButangAktif(kumpulanClass, nilaiAktif) {
+            document.querySelectorAll('.' + kumpulanClass).forEach(b => {
+                const nilaiButang = b.getAttribute('data-val');
+                const aktif = String(nilaiButang) === String(nilaiAktif);
+                b.classList.toggle('border-emerald-500', aktif);
+                b.classList.toggle('bg-emerald-50', aktif);
+                b.classList.toggle('shadow-md', aktif);
+                b.classList.toggle('border-slate-200', !aktif);
+            });
+        }
+
+        function pilihUmurBtn(val, daripadaKlik) {
+            if (daripadaKlik !== false) mainkanBunyi('sndClick');
+            pilihanSetupSementara.umur = val;
+            tandaButangAktif('btn-pilih-umur', val);
+            const lbl = document.getElementById('lblPetunjukUmur');
+            if (lbl) lbl.innerText = petunjukIkutUmur[val] || petunjukIkutUmur[5];
+        }
+        function pilihHadMasaBtn(val, daripadaKlik) {
+            if (daripadaKlik !== false) mainkanBunyi('sndClick');
+            pilihanSetupSementara.hadMasa = val;
+            tandaButangAktif('btn-pilih-hadmasa', val);
+        }
+        function pilihTahapBtn(val, daripadaKlik) {
+            if (daripadaKlik !== false) mainkanBunyi('sndClick');
+            pilihanSetupSementara.tahap = val;
+            tandaButangAktif('btn-pilih-tahap', val);
+        }
+        function sediakanUIsetupProfil() {
+            // Jika profil sedia ada (contoh: sunting semula), guna nilai sedia ada
+            pilihanSetupSementara.umur = profilKini.umur || 5;
+            pilihanSetupSementara.hadMasa = profilKini.hadMasa || 15;
+            pilihanSetupSementara.tahap = profilKini.tahap || "Sederhana";
+            pilihUmurBtn(pilihanSetupSementara.umur, false);
+            pilihHadMasaBtn(pilihanSetupSementara.hadMasa, false);
+            pilihTahapBtn(pilihanSetupSementara.tahap, false);
+        }
+
         function simpanProfilAnak() {
             profilKini.namaAnak = document.getElementById('txtNamaAnak').value.trim() || "Pengembara Cilik";
-            profilKini.umur = parseInt(document.getElementById('selUmurAnak').value);
-            profilKini.hadMasa = parseInt(document.getElementById('selHadMasa').value);
-            profilKini.tahap = document.getElementById('selTahap').value;
+            profilKini.umur = pilihanSetupSementara.umur;
+            profilKini.hadMasa = pilihanSetupSementara.hadMasa;
+            profilKini.tahap = pilihanSetupSementara.tahap;
 
             simpanDataKeCloud();
             tukarSkrin('skrinMenu');
@@ -719,29 +1288,72 @@
         // --------------------------------------------------
         // LOGIK PEMILIHAN DUNIA, TOPIK & MISI
         // --------------------------------------------------
+        // Tentukan sama ada satu topik patut dipaparkan, berdasarkan umur & tahap
+        // kesukaran anak yang dipilih semasa "Kenali Pengembara Cilik".
+        function topikTerbuka(namaDunia, dataTopik) {
+            if (namaDunia === "Matematik") {
+                if (dataTopik.nama.startsWith("Darab")) {
+                    // Darab hanya untuk umur 7 tahun ke atas
+                    return profilKini.umur >= 7;
+                }
+                if (dataTopik.nama.startsWith("Bahagi")) {
+                    // Bahagi hanya untuk umur 7 tahun DAN tahap Sukar
+                    return profilKini.umur >= 7 && profilKini.tahap === "Sukar";
+                }
+            }
+            return true;
+        }
+
         function pilihDunia(namaDunia) {
             duniaSemasa = namaDunia;
             document.getElementById('lblNamaDuniaSemasa').innerText = namaDunia;
-            
-            // Isi pilihan topik dropdown
-            const topics = dataDuniaPenuh[namaDunia] || [];
-            const sel = document.getElementById('selTopikSemasa');
-            sel.innerHTML = "";
-            
-            topics.forEach((t, index) => {
-                const opt = document.createElement('option');
-                opt.value = index;
-                opt.innerText = `${t.emoji} ${t.nama}`;
-                sel.appendChild(opt);
+
+            // Bina grid BUTANG topik (menggantikan dropdown lama)
+            const semuaTopik = dataDuniaPenuh[namaDunia] || [];
+            const gridTopik = document.getElementById('gridTopik');
+            gridTopik.innerHTML = "";
+
+            let indeksTopikDipaparkan = [];
+            semuaTopik.forEach((t, index) => {
+                if (!topikTerbuka(namaDunia, t)) return; // Sembunyikan topik yang belum sesuai
+                indeksTopikDipaparkan.push(index);
+
+                const btn = document.createElement('button');
+                btn.className = "btn-pilih-topik rounded-2xl border-2 border-slate-200 bg-white p-3 text-center font-bold text-sm text-slate-600 transition hover:border-amber-300 hover:bg-amber-50 flex flex-col items-center gap-1";
+                btn.dataset.val = index;
+                btn.innerHTML = `<span class="text-2xl">${t.emoji}</span><span class="leading-tight">${t.nama}</span>`;
+                btn.onclick = () => pilihTopikBtn(index);
+                gridTopik.appendChild(btn);
             });
 
-            topikIndexSemasa = 0;
-            kemaskiniSenaraiMisi();
+            topikIndexSemasa = indeksTopikDipaparkan[0] ?? 0;
+            pilihTopikBtn(topikIndexSemasa, false);
             tukarSkrin('skrinTopik');
         }
 
+        function pilihTopikBtn(index, daripadaKlik) {
+            if (daripadaKlik !== false) mainkanBunyi('sndClick');
+            topikIndexSemasa = index;
+            document.querySelectorAll('.btn-pilih-topik').forEach(b => {
+                const aktif = parseInt(b.dataset.val) === index;
+                b.classList.toggle('border-amber-400', aktif);
+                b.classList.toggle('bg-amber-50', aktif);
+                b.classList.toggle('shadow-md', aktif);
+                b.classList.toggle('border-slate-200', !aktif);
+            });
+
+            const dataTopik = dataDuniaPenuh[duniaSemasa][topikIndexSemasa];
+
+            // KES KHAS: "Hafalan Sifir" bukan kuiz biasa - ia bawa ke mod latihan tersendiri
+            if (dataTopik.nama.startsWith("Hafalan Sifir")) {
+                bukaSkrinPilihSifir();
+                return;
+            }
+
+            kemaskiniSenaraiMisi();
+        }
+
         function kemaskiniSenaraiMisi() {
-            topikIndexSemasa = parseInt(document.getElementById('selTopikSemasa').value) || 0;
             const grid = document.getElementById('gridMisi');
             grid.innerHTML = "";
 
@@ -768,35 +1380,168 @@
         }
 
         // --------------------------------------------------
+        // MOD BANTUAN HAFALAN SIFIR (2 hingga 12) - BUKAN KUIZ
+        // --------------------------------------------------
+        let sifirSemasa = 2;
+        let sifirIndexSemasa = 0; // 0 => pendarab 2, ... 10 => pendarab 12
+        const SIFIR_MULA = 2;
+        const SIFIR_TAMAT = 12;
+
+        function bukaSkrinPilihSifir() {
+            const grid = document.getElementById('gridPilihSifir');
+            grid.innerHTML = "";
+            for (let s = SIFIR_MULA; s <= SIFIR_TAMAT; s++) {
+                const btn = document.createElement('button');
+                btn.className = "bg-white hover:bg-purple-50 border-2 border-purple-200 hover:border-purple-400 rounded-2xl p-4 text-center font-black text-purple-600 transition transform hover:scale-105 active:translate-y-1 shadow-sm";
+                btn.innerHTML = `<div class="text-xs uppercase opacity-60 mb-1">Sifir</div><div class="text-3xl">${s}</div>`;
+                btn.onclick = () => mulaLatihanSifir(s);
+                grid.appendChild(btn);
+            }
+            tukarSkrin('skrinPilihSifir');
+        }
+
+        function mulaLatihanSifir(nomborSifir) {
+            sifirSemasa = nomborSifir;
+            sifirIndexSemasa = 0;
+            document.getElementById('lblSifirTajuk').innerText = `Sifir ${nomborSifir}`;
+            document.getElementById('lblSifirTotal').innerText = (SIFIR_TAMAT - SIFIR_MULA + 1);
+            tukarSkrin('skrinLatihanSifir');
+            paparFaktaSifir();
+        }
+
+        function paparFaktaSifir() {
+            const pendarab = SIFIR_MULA + sifirIndexSemasa;
+            const hasil = sifirSemasa * pendarab;
+
+            document.getElementById('boxFaktaSifir').innerText = `${sifirSemasa} \u00d7 ${pendarab} = ${hasil}`;
+            document.getElementById('lblSifirIndex').innerText = (sifirIndexSemasa + 1);
+
+            const jumlahFakta = SIFIR_TAMAT - SIFIR_MULA + 1;
+            const peratus = ((sifirIndexSemasa + 1) / jumlahFakta) * 100;
+            document.getElementById('barProgressSifir').style.width = peratus + '%';
+
+            document.getElementById('btnSifirSebelum').disabled = (sifirIndexSemasa === 0);
+            const btnSeterusnya = document.getElementById('btnSifirSeterusnya');
+            const diPenghujung = (sifirIndexSemasa === jumlahFakta - 1);
+            btnSeterusnya.innerText = diPenghujung ? "Selesai! 🎉" : "Seterusnya ➡";
+
+            // Sebut secara automatik setiap kali fakta baharu dipaparkan
+            bacaFaktaSifirSemasa();
+        }
+
+        function navSifir(delta) {
+            const jumlahFakta = SIFIR_TAMAT - SIFIR_MULA + 1;
+            const indexBaharu = sifirIndexSemasa + delta;
+
+            if (indexBaharu >= jumlahFakta) {
+                // Selesai satu pusingan penuh - raikan sikit lalu kembali ke pilihan sifir
+                mainkanBunyi('sndWin');
+                confetti({ particleCount: 80, spread: 90, origin: { y: 0.5 } });
+                profilKini.syiling = (profilKini.syiling || 0) + 5;
+                simpanDataKeCloud();
+                setTimeout(() => { bukaSkrinPilihSifir(); }, 900);
+                return;
+            }
+            if (indexBaharu < 0) return;
+
+            sifirIndexSemasa = indexBaharu;
+            mainkanBunyi('sndClick');
+            paparFaktaSifir();
+        }
+
+        // Penukar nombor 0-999 kepada perkataan Bahasa Melayu (terbilang)
+        // Julat yang diperlukan di sini kecil sahaja (maksimum 12 x 12 = 144).
+        const NAMA_NOMBOR_BM = ["kosong","satu","dua","tiga","empat","lima","enam","tujuh","lapan","sembilan","sepuluh","sebelas"];
+        function terbilangMS(n) {
+            if (n < 12) return NAMA_NOMBOR_BM[n];
+            if (n < 20) return NAMA_NOMBOR_BM[n - 10] + " belas";
+            if (n < 100) {
+                const puluh = Math.floor(n / 10);
+                const baki = n % 10;
+                const depan = NAMA_NOMBOR_BM[puluh] + " puluh";
+                return baki === 0 ? depan : depan + " " + NAMA_NOMBOR_BM[baki];
+            }
+            if (n < 1000) {
+                const ratus = Math.floor(n / 100);
+                const baki = n % 100;
+                const depan = (ratus === 1) ? "seratus" : NAMA_NOMBOR_BM[ratus] + " ratus";
+                return baki === 0 ? depan : depan + " " + terbilangMS(baki);
+            }
+            return String(n);
+        }
+
+        function bacaFaktaSifirSemasa() {
+            const pendarab = SIFIR_MULA + sifirIndexSemasa;
+            const hasil = sifirSemasa * pendarab;
+            const ayat = `${terbilangMS(sifirSemasa)} darab ${terbilangMS(pendarab)} sama dengan ${terbilangMS(hasil)}`;
+            sebutSukuKata(ayat);
+        }
+
+        // --------------------------------------------------
         // ENJIN STRUKTUR GAMEPLAY & TRACING JARI
         // --------------------------------------------------
+        function ambilSoalanUntukMisi(dataTopik, kunciTopik, jumlahDiperlukan) {
+            if (!profilKini.riwayatSoalan) profilKini.riwayatSoalan = {};
+            let sudahGuna = profilKini.riwayatSoalan[kunciTopik] || [];
+
+            const semuaIndeks = dataTopik.soalan.map((_, i) => i);
+            let belumGuna = semuaIndeks.filter(i => !sudahGuna.includes(i));
+
+            // Jika soalan belum guna tidak cukup, gabungkan semula dengan kumpulan penuh
+            // (kitar semula) supaya soalan lama boleh muncul lagi HANYA selepas semua
+            // soalan lain sudah pernah keluar dahulu.
+            let kumpulanPilih = shuffleArray(belumGuna);
+            if (kumpulanPilih.length < jumlahDiperlukan) {
+                const bakiPusingan = shuffleArray(semuaIndeks);
+                kumpulanPilih = [...kumpulanPilih, ...bakiPusingan.filter(i => !kumpulanPilih.includes(i))];
+            }
+
+            const jumlahSebenar = Math.min(jumlahDiperlukan, kumpulanPilih.length);
+            const indeksTerpilih = kumpulanPilih.slice(0, jumlahSebenar);
+
+            // Kemaskini riwayat: tambah yang baru digunakan; reset jika kitaran genap habis
+            let riwayatBaharu = [...sudahGuna, ...indeksTerpilih];
+            if (riwayatBaharu.length >= semuaIndeks.length) {
+                // Kekalkan hanya baki lebihan pusingan terkini supaya kitaran seterusnya adil
+                riwayatBaharu = indeksTerpilih.slice();
+            }
+            profilKini.riwayatSoalan[kunciTopik] = riwayatBaharu;
+
+            return indeksTerpilih.map(i => dataTopik.soalan[i]);
+        }
+
+        function shuffleArray(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
         function mulaMisiGame(nomborMisi) {
     misiSemasa = nomborMisi; 
     const dataTopik = dataDuniaPenuh[duniaSemasa][topikIndexSemasa];
     document.getElementById('lblMisiTajuk').innerText = `Misi ${nomborMisi}`;
     document.getElementById('lblTopkTajuk').innerText = dataTopik.nama;
     
-    // 1. Tentukan jumlah target soalan berdasarkan tahap kesukaran
-    let targetCount = profilKini.tahap === "Easy" ? 10 : (profilKini.tahap === "Sukar" ? 20 : 15);
-    
-    // 2. Salin senarai asal dan buat pusingan rawak (Shuffle) kali pertama
-    let soalanAsalRawak = [...dataTopik.soalan].sort(() => Math.random() - 0.5);
-    soalanMisiKini = [];
-    
-    // 3. Masukkan soalan ke dalam misi. Jika tak cukup, kita klon & rawak pilihan jawapan
-    for(let i = 0; i < targetCount; i++) {
-        let soalanKlon = JSON.parse(JSON.stringify(soalanAsalRawak[i % soalanAsalRawak.length]));
-        
+    // Setiap misi tetap mengandungi MAKSIMUM 10 soalan sahaja.
+    const JUMLAH_TETAP_SOALAN = 10;
+    const kunciTopik = `${duniaSemasa}|${topikIndexSemasa}`;
+
+    // Ambil soalan menggunakan sistem elak-pengulangan merentasi misi:
+    // soalan yang pernah keluar dalam misi terdahulu (topik yang sama) tidak akan
+    // diulang sehingga SEMUA soalan lain dalam topik itu sudah pernah dipaparkan dahulu.
+    const soalanTerpilih = ambilSoalanUntukMisi(dataTopik, kunciTopik, JUMLAH_TETAP_SOALAN);
+
+    soalanMisiKini = soalanTerpilih.map(s => {
+        let soalanKlon = JSON.parse(JSON.stringify(s));
         // Jika jenis objektif/pilih gambar, kita rawakkan susunan butang pilihan jawapan
-        if(soalanKlon.pilihan) {
+        if (soalanKlon.pilihan) {
             soalanKlon.pilihan.sort(() => Math.random() - 0.5);
         }
-        
-        soalanMisiKini.push(soalanKlon);
-    }
-    
-    // 4. Rawakkan keseluruhan senarai akhir supaya soalan yang sama tidak berturutan
-    soalanMisiKini.sort(() => Math.random() - 0.5);
+        return soalanKlon;
+    });
     
     indexSoalanKini = 0; 
     tukarSkrin('skrinGame'); 
@@ -830,9 +1575,13 @@
             const txtVisual = document.getElementById('txtVisualEmoji');
             const canvasTracing = document.getElementById('tracingCanvas');
             const zonJawapan = document.getElementById('zonJawapan');
+            const boxVisual = document.getElementById('boxVisualGame');
             
             // Reset elemen paparan utama
             txtVisual.classList.remove('hidden');
+            txtVisual.removeAttribute('style');
+            boxVisual.style.borderRadius = '';
+            boxVisual.style.minHeight = '';
             canvasTracing.classList.add('hidden');
             zonJawapan.innerHTML = "";
 
@@ -888,6 +1637,239 @@
                     }, 1200);
                 };
                 zonJawapan.appendChild(btnSelesaiLukis);
+
+            } else if (dataSoalan.jenis === "cari_sama") {
+                txtVisual.innerHTML = `<div class="flex flex-col items-center gap-2"><span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Suku Kata Sasaran</span><div class="bg-white rounded-full px-8 py-3 shadow-inner border-4 border-sky-200 text-5xl font-black text-sky-500">${dataSoalan.target}</div></div>`;
+
+                const gridSama = document.createElement('div');
+                gridSama.className = "grid grid-cols-2 gap-4 max-w-md mx-auto";
+                dataSoalan.pilihan.forEach(pil => {
+                    const btn = document.createElement('button');
+                    btn.className = "bg-cyan-400 hover:bg-cyan-500 text-white text-2xl font-black py-4 px-6 rounded-full border-b-8 border-cyan-600 transition transform hover:scale-105 active:translate-y-1";
+                    btn.innerText = pil;
+                    btn.onclick = () => { sebutSukuKata(pil); semakJawapanBetul(pil, dataSoalan.jawapan); };
+                    gridSama.appendChild(btn);
+                });
+                zonJawapan.appendChild(gridSama);
+
+            } else if (dataSoalan.jenis === "cari_berlainan") {
+                txtVisual.innerText = "🍃";
+
+                const gridBeza = document.createElement('div');
+                gridBeza.className = "grid grid-cols-2 gap-4 max-w-md mx-auto";
+                dataSoalan.pilihan.forEach(pil => {
+                    const btn = document.createElement('button');
+                    btn.className = "bg-emerald-300 hover:bg-emerald-400 text-emerald-900 text-2xl font-black py-4 px-6 rounded-3xl border-b-8 border-emerald-500 transition transform hover:scale-105 active:translate-y-1";
+                    btn.innerText = pil;
+                    btn.onclick = () => { sebutSukuKata(pil); semakJawapanBetul(pil, dataSoalan.jawapan); };
+                    gridBeza.appendChild(btn);
+                });
+                zonJawapan.appendChild(gridBeza);
+
+            } else if (dataSoalan.jenis === "padan_suku_kata") {
+                const svgFn = SVG_LIBRARY[dataSoalan.gambarKey];
+                txtVisual.innerHTML = svgFn ? svgFn() : '❓';
+                txtVisual.style.width = '150px';
+                txtVisual.style.display = 'inline-block';
+                if (dataSoalan.sharp) { boxVisual.style.borderRadius = '0px'; }
+
+                const optsA = janaPilihanSukuKata(dataSoalan.a, KUMPULAN_SUKU_A, 4);
+                const optsB = janaPilihanSukuKata(dataSoalan.b, KUMPULAN_SUKU_B, 4);
+                let pskSelectedBtn = null, pskSelectedVal = null;
+
+                const wrap = document.createElement('div');
+                wrap.className = "space-y-4";
+
+                const slotRow = document.createElement('div');
+                slotRow.className = "flex items-center justify-center gap-3 text-2xl font-black";
+                const radiusClass = dataSoalan.sharp ? "rounded-none" : "rounded-xl";
+                slotRow.innerHTML = `
+                    <span id="pskSlotA" class="min-w-[64px] px-3 py-2 ${radiusClass} bg-slate-100 text-slate-400">?</span>
+                    <span class="text-slate-400">+</span>
+                    <span id="pskSlotB" class="min-w-[64px] px-3 py-2 ${radiusClass} bg-slate-100 text-slate-400">?</span>
+                    <span class="text-slate-400">=</span>
+                    <span id="pskResult" class="min-w-[100px] px-3 py-2 rounded-xl bg-amber-50 text-amber-400">___</span>
+                `;
+                wrap.appendChild(slotRow);
+
+                const rowFirst = document.createElement('div');
+                rowFirst.className = "flex flex-wrap justify-center gap-3";
+                const rowSecond = document.createElement('div');
+                rowSecond.className = "flex flex-wrap justify-center gap-3";
+
+                optsA.forEach(val => {
+                    const btn = document.createElement('button');
+                    btn.className = "bg-sky-200 hover:bg-sky-300 text-slate-700 text-xl font-black py-3 px-5 rounded-2xl border-b-4 border-sky-400 transition active:translate-y-1";
+                    btn.innerText = val;
+                    btn.onclick = () => {
+                        sebutSukuKata(val);
+                        [...rowFirst.children].forEach(b => b.classList.remove('ring-4', 'ring-amber-400'));
+                        btn.classList.add('ring-4', 'ring-amber-400');
+                        pskSelectedBtn = btn; pskSelectedVal = val;
+                        document.getElementById('pskSlotA').innerText = val;
+                        document.getElementById('pskSlotA').classList.add('bg-emerald-100', 'text-emerald-600');
+                        [...rowSecond.children].forEach(b => b.disabled = false);
+                    };
+                    rowFirst.appendChild(btn);
+                });
+
+                optsB.forEach(val => {
+                    const btn = document.createElement('button');
+                    btn.disabled = true;
+                    btn.className = "bg-pink-200 hover:bg-pink-300 text-slate-700 text-xl font-black py-3 px-5 rounded-2xl border-b-4 border-pink-400 transition active:translate-y-1 disabled:opacity-40";
+                    btn.innerText = val;
+                    btn.onclick = () => {
+                        if (pskSelectedVal === null) return;
+                        sebutSukuKata(val);
+                        const isCorrect = (pskSelectedVal === dataSoalan.a) && (val === dataSoalan.b);
+                        if (isCorrect) {
+                            document.getElementById('pskSlotB').innerText = val;
+                            document.getElementById('pskSlotB').classList.add('bg-emerald-100', 'text-emerald-600');
+                            document.getElementById('pskResult').innerText = dataSoalan.label;
+                            document.getElementById('pskResult').classList.add('bg-emerald-100', 'text-emerald-600');
+                            [...rowFirst.children, ...rowSecond.children].forEach(b => b.disabled = true);
+                            semakJawapanBetul(dataSoalan.a + dataSoalan.b, dataSoalan.a + dataSoalan.b);
+                        } else {
+                            btn.classList.add('animate-bounce');
+                            semakJawapanBetul('x', dataSoalan.a + dataSoalan.b);
+                            setTimeout(() => {
+                                btn.classList.remove('animate-bounce');
+                                if (pskSelectedBtn) pskSelectedBtn.classList.remove('ring-4', 'ring-amber-400');
+                                pskSelectedBtn = null; pskSelectedVal = null;
+                                document.getElementById('pskSlotA').innerText = '?';
+                                document.getElementById('pskSlotA').classList.remove('bg-emerald-100', 'text-emerald-600');
+                                [...rowSecond.children].forEach(b => b.disabled = true);
+                            }, 480);
+                        }
+                    };
+                    rowSecond.appendChild(btn);
+                });
+
+                wrap.appendChild(rowFirst);
+                wrap.appendChild(rowSecond);
+                zonJawapan.appendChild(wrap);
+
+            } else if (dataSoalan.jenis === "cari_perkataan") {
+                txtVisual.classList.add('hidden');
+                boxVisual.style.minHeight = 'auto';
+
+                const grid = dataSoalan.grid;
+                const senaraiKata = dataSoalan.words;
+                let cpFoundWords = new Set();
+                let cpSelectedCell = null;
+                let cpCellButtons = [];
+                const warnaJumpa = [
+                    'bg-pink-300 text-white border-pink-400',
+                    'bg-sky-300 text-white border-sky-400',
+                    'bg-emerald-300 text-white border-emerald-400',
+                    'bg-purple-300 text-white border-purple-400'
+                ];
+
+                const wrapCP = document.createElement('div');
+                wrapCP.className = "space-y-3";
+
+                const infoCP = document.createElement('p');
+                infoCP.className = "text-xs font-bold text-slate-400";
+                infoCP.innerText = "Klik suku kata pertama, kemudian suku kata kedua untuk bentuk perkataan!";
+                wrapCP.appendChild(infoCP);
+
+                const layoutCP = document.createElement('div');
+                layoutCP.className = "grid grid-cols-1 sm:grid-cols-[1fr_150px] gap-4 items-start";
+
+                const gridEl = document.createElement('div');
+                gridEl.className = "grid grid-cols-4 gap-2 max-w-xs mx-auto w-full";
+
+                const wordListEl = document.createElement('div');
+                wordListEl.className = "space-y-2 text-left";
+                senaraiKata.forEach((w, i) => {
+                    const row = document.createElement('div');
+                    row.id = `cpword-${i}`;
+                    row.className = "px-3 py-2 rounded-xl bg-slate-100 font-black text-slate-400 text-sm text-center";
+                    row.innerText = w.word;
+                    wordListEl.appendChild(row);
+                });
+
+                function cpCellsEqual(pair1, pair2) {
+                    const [a, b] = pair1; const [x, y] = pair2;
+                    const m1 = (a[0] === x[0] && a[1] === x[1]) && (b[0] === y[0] && b[1] === y[1]);
+                    const m2 = (a[0] === y[0] && a[1] === y[1]) && (b[0] === x[0] && b[1] === x[1]);
+                    return m1 || m2;
+                }
+                function cpIsFound(r, c) { return cpCellButtons[r][c].dataset.found === "1"; }
+                function cpClearSelection() {
+                    if (cpSelectedCell) cpCellButtons[cpSelectedCell.r][cpSelectedCell.c].classList.remove('ring-4', 'ring-amber-400');
+                    cpSelectedCell = null;
+                }
+                function cpHandlePair(cellA, cellB) {
+                    cpClearSelection();
+                    if (cpIsFound(cellA.r, cellA.c) || cpIsFound(cellB.r, cellB.c)) return;
+                    if (cellA.r === cellB.r && cellA.c === cellB.c) return;
+                    let matchIndex = -1;
+                    senaraiKata.forEach((w, i) => {
+                        if (!cpFoundWords.has(i) && cpCellsEqual(w.cells, [[cellA.r, cellA.c], [cellB.r, cellB.c]])) matchIndex = i;
+                    });
+                    const btnA = cpCellButtons[cellA.r][cellA.c];
+                    const btnB = cpCellButtons[cellB.r][cellB.c];
+                    if (matchIndex >= 0) {
+                        cpFoundWords.add(matchIndex);
+                        const kelasWarna = warnaJumpa[matchIndex % warnaJumpa.length];
+                        [btnA, btnB].forEach(b => {
+                            b.dataset.found = "1";
+                            b.className = "aspect-square rounded-2xl flex items-center justify-center font-black text-lg border-2 transition " + kelasWarna;
+                        });
+                        const rowEl = document.getElementById(`cpword-${matchIndex}`);
+                        rowEl.className = "px-3 py-2 rounded-xl bg-emerald-100 font-black text-emerald-600 text-sm text-center line-through";
+                        mainkanBunyi('sndCorrect');
+                        confetti({ particleCount: 30, spread: 60, origin: { y: 0.6 } });
+                        paparFeedbackBarara(true);
+                        if (cpFoundWords.size === senaraiKata.length) {
+                            setTimeout(() => {
+                                indexSoalanKini++;
+                                binaPaparanSoalanSemasa();
+                            }, 1300);
+                        }
+                    } else {
+                        [btnA, btnB].forEach(b => {
+                            b.classList.add('animate-bounce');
+                            setTimeout(() => b.classList.remove('animate-bounce'), 460);
+                        });
+                        mainkanBunyi('sndWrong');
+                        paparFeedbackBarara(false);
+                    }
+                }
+
+                for (let r = 0; r < 4; r++) {
+                    cpCellButtons[r] = [];
+                    for (let c = 0; c < 4; c++) {
+                        const btn = document.createElement('button');
+                        btn.className = "aspect-square rounded-2xl bg-white border-2 border-slate-200 flex items-center justify-center font-black text-lg text-slate-700 hover:border-emerald-300 transition";
+                        btn.innerText = grid[r][c];
+                        btn.dataset.found = "0";
+                        btn.onclick = (function(rr, cc, buttonRef) {
+                            return function() {
+                                if (cpIsFound(rr, cc)) return;
+                                sebutSukuKata(grid[rr][cc]);
+                                if (cpSelectedCell === null) {
+                                    cpSelectedCell = { r: rr, c: cc };
+                                    buttonRef.classList.add('ring-4', 'ring-amber-400');
+                                } else if (cpSelectedCell.r === rr && cpSelectedCell.c === cc) {
+                                    cpClearSelection();
+                                } else {
+                                    const first = cpSelectedCell;
+                                    cpClearSelection();
+                                    cpHandlePair(first, { r: rr, c: cc });
+                                }
+                            };
+                        })(r, c, btn);
+                        gridEl.appendChild(btn);
+                        cpCellButtons[r].push(btn);
+                    }
+                }
+
+                layoutCP.appendChild(gridEl);
+                layoutCP.appendChild(wordListEl);
+                wrapCP.appendChild(layoutCP);
+                zonJawapan.appendChild(wrapCP);
             }
         }
 
